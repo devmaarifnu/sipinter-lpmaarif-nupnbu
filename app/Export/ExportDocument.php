@@ -5,6 +5,7 @@ use App\Exceptions\CatchErrorException;
 use App\Helpers\Date;
 use App\Helpers\GenerateQr;
 use App\Http\Controllers\Settings;
+use App\Models\FileRegister;
 use App\Models\Satpen;
 use PhpOffice\PhpWord\TemplateProcessor;
 
@@ -90,22 +91,31 @@ class ExportDocument
             if ($satpenProfile) {
 
                 if (GenerateQr::make($satpenProfile->file[1]->qrcode, $qrPath)) {
+                    /**
+                     * Dokumen diambil berdasarkan mapfile, bukan urutan baris.
+                     * Data rekomendasi PC/PW kini opsional karena kolom tersebut
+                     * dinonaktifkan pada form registrasi/revisi.
+                     */
+                    $filePermohonan = FileRegister::dataUntuk($satpenProfile->filereg, 'surat_permohonan');
+                    $fileRekomPC = FileRegister::dataUntuk($satpenProfile->filereg, 'rekom_pc');
+                    $fileRekomPW = FileRegister::dataUntuk($satpenProfile->filereg, 'rekom_pw');
+
                     $templateDocument->setValue('nomor', $satpenProfile->no_urut);
                     $templateDocument->setValue('tahuntop', date('Y'));
                     $templateDocument->setValue('bulanromawi', Date::bulanRomawi($satpenProfile->file[1]->tgl_file));
-                    $templateDocument->setValue('namasekolah', $satpenProfile->filereg[0]->nm_lembaga);
-                    $templateDocument->setValue('nosrtsatpen', $satpenProfile->filereg[0]->nomor_surat);
-                    $templateDocument->setValue('tglsuratsatpen', Date::tglMasehi($satpenProfile->filereg[0]->tgl_surat));
+                    $templateDocument->setValue('namasekolah', $filePermohonan->nm_lembaga ?? '');
+                    $templateDocument->setValue('nosrtsatpen', $filePermohonan->nomor_surat ?? '');
+                    $templateDocument->setValue('tglsuratsatpen', $filePermohonan ? Date::tglMasehi($filePermohonan->tgl_surat) : '');
 
-                    $templateDocument->setValue('nmlembagapc', $satpenProfile->filereg[1]->nm_lembaga);
-                    $templateDocument->setValue('pc', $satpenProfile->filereg[1]->daerah);
-                    $templateDocument->setValue('nosrtpc', $satpenProfile->filereg[1]->nomor_surat);
-                    $templateDocument->setValue('tglsrtpc', Date::tglMasehi($satpenProfile->filereg[1]->tgl_surat));
+                    $templateDocument->setValue('nmlembagapc', $fileRekomPC->nm_lembaga ?? '');
+                    $templateDocument->setValue('pc', $fileRekomPC->daerah ?? '');
+                    $templateDocument->setValue('nosrtpc', $fileRekomPC->nomor_surat ?? '');
+                    $templateDocument->setValue('tglsrtpc', $fileRekomPC ? Date::tglMasehi($fileRekomPC->tgl_surat) : '');
 
-                    $templateDocument->setValue('nmlembagapw', $satpenProfile->filereg[2]->nm_lembaga);
-                    $templateDocument->setValue('pw', $satpenProfile->filereg[2]->daerah);
-                    $templateDocument->setValue('nosrtpw', $satpenProfile->filereg[2]->nomor_surat);
-                    $templateDocument->setValue('tglsrtpw', Date::tglMasehi($satpenProfile->filereg[2]->tgl_surat));
+                    $templateDocument->setValue('nmlembagapw', $fileRekomPW->nm_lembaga ?? '');
+                    $templateDocument->setValue('pw', $fileRekomPW->daerah ?? '');
+                    $templateDocument->setValue('nosrtpw', $fileRekomPW->nomor_surat ?? '');
+                    $templateDocument->setValue('tglsrtpw', $fileRekomPW ? Date::tglMasehi($fileRekomPW->tgl_surat) : '');
 
                     $templateDocument->setValue('namasatpen', $satpenProfile->nm_satpen);
                     $templateDocument->setValue('alamat', $satpenProfile->alamat);
@@ -120,10 +130,10 @@ class ExportDocument
                     $templateDocument->setValue('tglm', Date::tglMasehi($satpenProfile->file[1]->tgl_file));
                     $templateDocument->setValue('tglh', Date::tglHijriyah($satpenProfile->file[1]->tgl_file));
 
-                    $templateDocument->setValue('tembusanlembagapw', $satpenProfile->filereg[2]->nm_lembaga);
-                    $templateDocument->setValue('propinsipw', $satpenProfile->filereg[2]->daerah);
-                    $templateDocument->setValue('tembusanlembagapc', $satpenProfile->filereg[1]->nm_lembaga);
-                    $templateDocument->setValue('kabupatenpc', $satpenProfile->filereg[1]->daerah);
+                    $templateDocument->setValue('tembusanlembagapw', $fileRekomPW->nm_lembaga ?? '');
+                    $templateDocument->setValue('propinsipw', $fileRekomPW->daerah ?? '');
+                    $templateDocument->setValue('tembusanlembagapc', $fileRekomPC->nm_lembaga ?? '');
+                    $templateDocument->setValue('kabupatenpc', $fileRekomPC->daerah ?? '');
 
                     // Replace the QR code placeholder with the actual QR code image in the template
                     $templateDocument->setImageValue('qrcode',  array('path' => $qrPath, 'width' => 150, 'height' => 150));

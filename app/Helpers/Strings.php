@@ -32,6 +32,14 @@ class Strings
 
     public static function replaceMapFile($mapfile)
     {
+        /**
+         * Dicocokkan lebih dulu agar 'surat aset' tidak ikut terbaca
+         * sebagai 'pengurus cabang' karena mengandung kata 'pc'.
+         */
+        if ($mapfile == "surat_aset") {
+            return "surat keterangan status aset";
+        }
+
         $mapfile = str_replace("_", " ", $mapfile);
         if (str_contains($mapfile, "pc")) {
             $mapfile = "pengurus cabang";

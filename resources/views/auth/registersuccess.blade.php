@@ -6,11 +6,13 @@
 <link rel="stylesheet" href="{{ asset('assets/css/auth.css') }}" />
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
 @endsection
-@endsection
 
 @section('container')
-<div class="sip-shell">
-    <div class="sip-card">
+{{-- sip-shell-center: .sip-shell hanya flex biasa tanpa perataan, sehingga kartu
+     tampil di kiri atas. Kelas ini menambahkan align-items & justify-content center.
+     sip-card-success: memusatkan ikon centang & judul khusus halaman ini. --}}
+<div class="sip-shell sip-shell-center">
+    <div class="sip-card sip-card-success">
         <a href="{{ route('home') }}" class="sip-brand"><img src="{{ asset('assets/images/logos/Logo_Sipinter_Panjang.png') }}" alt="SIPINTER"></a>
 
         <div class="sip-success-icon">

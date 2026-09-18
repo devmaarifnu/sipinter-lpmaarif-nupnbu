@@ -245,20 +245,11 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="col-sm-4 px-3">
-                            <h5 class="mb-2 fs-4">File Pendukung</h5>
-                            @foreach($satpenProfile->filereg as $row)
-                                <div class="mb-3 px-3 py-2 card-box-detail">
-                                    <h6 class="text-capitalize">{{ Strings::replaceMapFile($row->mapfile)}}</h6>
-                                    <p class="mb-1">{{$row->nm_lembaga}} {{$row->daerah}}</p>
-                                    <p>Nomor : {{$row->nomor_surat}}</p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <small>Tanggal {{\App\Helpers\Date::tglMasehi($row->tgl_surat)}}</small>
-                                        <a href="{{route('viewerpdf', $row->filesurat)}}" target="_blank"><span class="badge fs-2 bg-primary">Lihat PDF</span></a>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
+                        @include('component.file-pendukung', [
+                            'attrs' => 'col-sm-4 px-3',
+                            'prefix' => 'mysatpen',
+                            'filereg' => $satpenProfile->filereg,
+                        ])
                         <div class="col-sm-3">
                             <div style="max-height:35rem;overflow:auto;">
                                 <ul class="timeline">

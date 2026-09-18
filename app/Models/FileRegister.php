@@ -20,4 +20,17 @@ class FileRegister extends Model
         'tgl_surat',
         'filesurat',
     ];
+
+    /**
+     * Ambil satu file register berdasarkan jenis dokumennya.
+     *
+     * Dipakai untuk menggantikan akses berdasarkan urutan ($filereg[0], $filereg[1], ...)
+     * karena urutan baris berubah ketika rekomendasi cabang/wilayah dinonaktifkan.
+     *
+     * @param  \Illuminate\Support\Collection|array  $filereg
+     */
+    public static function dataUntuk($filereg, string $mapfile): ?self
+    {
+        return collect($filereg)->firstWhere('mapfile', $mapfile);
+    }
 }
