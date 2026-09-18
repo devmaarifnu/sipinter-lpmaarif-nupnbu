@@ -21,7 +21,12 @@
 
     <section class="mt-4" style="min-height:32rem">
         <div class="container">
-            <form class="card mx-auto w-75" style="margin-top:-3.3rem;" action="{{ route('register.proses') }}" method="post" enctype="multipart/form-data">
+            {{--
+                novalidate: matikan validasi bawaan browser supaya pemeriksaan bisa dilakukan
+                sendiri oleh validateInputs(). Tanpa ini, browser menahan pengiriman lebih dulu
+                tanpa menampilkan pesan apa pun pada field di tab yang sedang disembunyikan.
+            --}}
+            <form class="card mx-auto w-75" style="margin-top:-3.3rem;" action="{{ route('register.proses') }}" method="post" enctype="multipart/form-data" novalidate>
                 @csrf
                 <div class="card-body pb-0">
                     <h5 class="fw-medium mb-0">Registrasi Satpen</h5>
@@ -40,6 +45,9 @@
                     </nav>
                 </div>
                 <div class="card-body pb-3">
+                    {{-- Wadah pesan kesalahan validasi sisi klien (diisi oleh validateInputs) --}}
+                    <div id="alert-validasi" class="d-none"></div>
+
                     <div class="tab d-none">
                         <div class="row">
                             <div class="col-12 col-sm-6">
@@ -112,7 +120,13 @@
                             <div class="col-12 col-sm-6">
                                 <div class="mb-3">
                                     <label for="thn_berdiri" class="form-label required">Tahun Berdiri</label>
-                                    <input type="text" class="form-control  @error('thn_berdiri') is-invalid @enderror" id="thn_berdiri" name="thn_berdiri" value="{{ old('thn_berdiri') }}" placeholder="Masukkan tahun berdiri sekolah" required>
+                                    {{--
+                                        inputmode numeric + maxlength 4 + pattern [0-9]{4}:
+                                        memaksa format tahun 4 digit. Pola ini juga dibaca oleh
+                                        validateInputs() lewat checkValidity().
+                                        data-pesan dipakai sebagai pesan kesalahan khusus field ini.
+                                    --}}
+                                    <input type="text" class="form-control  @error('thn_berdiri') is-invalid @enderror" id="thn_berdiri" name="thn_berdiri" value="{{ old('thn_berdiri') }}" placeholder="Contoh: 2018" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" data-pesan="Tahun berdiri harus berupa 4 digit angka, contoh 2018." required>
                                     <div class="invalid-feedback">
                                         @error('thn_berdiri') {{ $message }} @enderror
                                     </div>
@@ -287,48 +301,159 @@
                                 </div>
                             </div>
                         </div>
-                        <h5 class="mt-2 mb-3">Surat Keterangan Cabang</h5>
+                        {{--
+                            Rekomendasi Cabang & Rekomendasi Wilayah dinonaktifkan sementara sehingga
+                            box-nya dimasukkan ke collapse di atas Surat Keterangan Status Aset.
+                            Input di dalamnya TETAP ada namun diberi atribut disabled agar tidak bisa
+                            diisi, tidak ikut terkirim, dan tidak memblokir submit.
+                            Untuk mengaktifkan kembali: hapus atribut 'disabled' pada input di bawah.
+                        --}}
+                        <div class="rekomendasi-nonaktif">
+                            <button class="btn btn-sm btn-light-secondary text-secondary w-100 d-flex align-items-center mt-4 mb-2"
+                                    type="button" data-bs-toggle="collapse" data-bs-target="#collapse-rekom-nonaktif"
+                                    aria-expanded="false" aria-controls="collapse-rekom-nonaktif">
+                                <i class="ti ti-chevron-down me-1"></i>
+                                Surat Keterangan Cabang &amp; Rekomendasi Wilayah (Nonaktif)
+                            </button>
+                            <div class="collapse pt-2 border-top border-2" id="collapse-rekom-nonaktif">
+                                <h5 class="mt-3 mb-3 text-muted">Surat Keterangan Cabang
+                                    <span class="badge bg-light-secondary text-secondary ms-1">Nonaktif</span>
+                                </h5>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <div class="mb-3">
+                                            <label for="nm_rekom_pc" class="form-label text-muted">Pemberi Keterangan</label>
+                                            <select class="form-select" id="nm_rekom_pc" name="nm_rekom_pc" disabled>
+                                                <option value="LP Ma'arif NU PCNU">LP Ma'arif NU PCNU</option>
+                                                <option value="PCNU">PCNU</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <label for="cabang_rekom_pc" class="form-label text-muted">Nama Cabang</label>
+                                        <select class="form-select" id="cabang_rekom_pc" name="cabang_rekom_pc" disabled>
+                                            @foreach($cabang as $row)
+                                                <option value="{{ $row->nama_pc }}">{{ $row->nama_pc }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <div class="mb-3">
+                                            <label for="no_srt_rekom_pc" class="form-label text-muted">Nomor Surat</label>
+                                            <input type="text" class="form-control" id="no_srt_rekom_pc" name="no_srt_rekom_pc" value="{{ old('no_srt_rekom_pc') }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <div class="mb-3">
+                                            <label for="tgl_srt_rekom_pc" class="form-label text-muted">Tanggal Surat</label>
+                                            <input type="date" class="form-control" id="tgl_srt_rekom_pc" name="tgl_srt_rekom_pc" value="{{ old('tgl_srt_rekom_pc') }}" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <label for="file_rekom_pc" class="form-label text-muted">File Keterangan PC</label>
+                                            <input type="file" class="form-control mb-1" id="file_rekom_pc" name="file_rekom_pc" accept="application/pdf" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h5 class="mt-4 mb-3 text-muted">Rekomendasi Wilayah
+                                    <span class="badge bg-light-secondary text-secondary ms-1">Nonaktif</span>
+                                </h5>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <div class="mb-3">
+                                            <label for="nm_rekom_pw" class="form-label text-muted">Pemberi Rekomendasi</label>
+                                            <select class="form-select" id="nm_rekom_pw" name="nm_rekom_pw" disabled>
+                                                <option value="LP Ma'arif NU PWNU">LP Ma'arif NU PWNU</option>
+                                                <option value="PWNU">PWNU</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <label for="wilayah_rekom_pw" class="form-label text-muted">Nama Wilayah</label>
+                                        <select class="form-select" id="wilayah_rekom_pw" name="wilayah_rekom_pw" disabled>
+                                            @foreach($propinsi as $row)
+                                                <option value="{{ $row->nm_prov }}">{{ $row->nm_prov }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <div class="mb-3">
+                                            <label for="no_srt_rekom_pw" class="form-label text-muted">Nomor Surat</label>
+                                            <input type="text" class="form-control" id="no_srt_rekom_pw" name="no_srt_rekom_pw" value="{{ old('no_srt_rekom_pw') }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <div class="mb-3">
+                                            <label for="tgl_srt_rekom_pw" class="form-label text-muted">Tanggal Surat</label>
+                                            <input type="date" class="form-control" id="tgl_srt_rekom_pw" name="tgl_srt_rekom_pw" value="{{ old('tgl_srt_rekom_pw') }}" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <label for="file_rekom_pw" class="form-label text-muted">File Rekomendasi PW</label>
+                                            <input type="file" class="form-control mb-1" id="file_rekom_pw" name="file_rekom_pw" accept="application/pdf" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5 class="mt-4 mb-3">Surat Keterangan Status Aset</h5>
                         <div class="row">
                             <div class="col-12 col-sm-6">
                                 <div class="mb-3">
-                                    <label for="nm_rekom_pc" class="form-label required">Pemberi Keterangan</label>
-                                    <select class="form-select  @error('nm_rekom_pc') is-invalid @enderror" id="nm_rekom_pc" name="nm_rekom_pc">
-                                        <option value="LP Ma'arif NU PCNU">LP Ma'arif NU PCNU</option>
-                                        <option value="PCNU">PCNU</option>
+                                    <label for="nm_srt_aset" class="form-label required">Pemberi Keterangan</label>
+                                    <select class="form-select  @error('nm_srt_aset') is-invalid @enderror" id="nm_srt_aset" name="nm_srt_aset" required>
+                                        <option value="PCNU" {{ old('nm_srt_aset') == 'PCNU' ? 'selected' : '' }}>PCNU</option>
+                                        <option value="PC Ma'arif NU" {{ old('nm_srt_aset') == "PC Ma'arif NU" ? 'selected' : '' }}>PC Ma'arif NU</option>
+                                        <option value="PWNU" {{ old('nm_srt_aset') == 'PWNU' ? 'selected' : '' }}>PWNU</option>
+                                        <option value="PW Ma'arif NU" {{ old('nm_srt_aset') == "PW Ma'arif NU" ? 'selected' : '' }}>PW Ma'arif NU</option>
                                     </select>
                                     <div class="invalid-feedback">
-                                        @error('nm_rekom_pc') {{ $message }} @enderror
+                                        @error('nm_srt_aset') {{ $message }} @enderror
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
-                                <label for="cabang_rekom_pc" class="form-label required">Nama Cabang</label>
-                                <select class="selectpicker @error('cabang_rekom_pc') is-invalid @enderror" data-show-subtext="false" data-live-search="true" name="cabang_rekom_pc" required>
-                                    @foreach($cabang as $row)
-                                        <option value="{{ $row->nama_pc }}" {{ Strings::removeFirstWord($row->nama_pc, 2) == Strings::removeFirstWord($cookieValue->kabkotanegara_ln) ? 'selected' : '' }}>{{ $row->nama_pc }}</option>
-                                    @endforeach
-                                </select>
-                                <div class="invalid-feedback">
-                                    @error('cabang_rekom_pc') {{ $message }} @enderror
+                                <div class="mb-3">
+                                    <label for="daerah_srt_aset" class="form-label required" id="label_daerah_srt_aset">Nama Penerbit Surat</label>
+                                    <select class="selectpicker @error('daerah_srt_aset') is-invalid @enderror" data-show-subtext="false" data-live-search="true" id="daerah_srt_aset" name="daerah_srt_aset" required>
+                                        <option value="">-- Pilih Pemberi Keterangan --</option>
+                                    </select>
+                                    <small class="text-primary" id="hint_daerah_srt_aset" style="display:none;">
+                                        Menampilkan daftar <span id="jenis_daerah_srt_aset"></span> sesuai pemberi keterangan yang dipilih.
+                                    </small>
+                                    <div class="invalid-feedback">
+                                        @error('daerah_srt_aset') {{ $message }} @enderror
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-12 col-sm-6">
                                 <div class="mb-3">
-                                    <label for="no_srt_rekom_pc" class="form-label required">Nomor Surat</label>
-                                    <input type="text" class="form-control  @error('no_srt_rekom_pc') is-invalid @enderror" id="no_srt_rekom_pc" name="no_srt_rekom_pc" value="{{ old('no_srt_rekom_pc') }}" placeholder="Masukkan nomor surat dari pengurus cabang" required>
+                                    <label for="no_srt_aset" class="form-label required">Nomor Surat</label>
+                                    <input type="text" class="form-control  @error('no_srt_aset') is-invalid @enderror" id="no_srt_aset" name="no_srt_aset" value="{{ old('no_srt_aset') }}" placeholder="Masukkan nomor surat keterangan status aset" required>
                                     <div class="invalid-feedback">
-                                        @error('no_srt_rekom_pc') {{ $message }} @enderror
+                                        @error('no_srt_aset') {{ $message }} @enderror
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="mb-3">
-                                    <label for="tgl_srt_rekom_pc" class="form-label required">Tanggal Surat</label>
-                                    <input type="date" class="form-control  @error('tgl_srt_rekom_pc') is-invalid @enderror" id="tgl_srt_rekom_pc" name="tgl_srt_rekom_pc" value="{{ old('tgl_srt_rekom_pc') }}" required>
+                                    <label for="tgl_srt_aset" class="form-label required">Tanggal Surat</label>
+                                    <input type="date" class="form-control  @error('tgl_srt_aset') is-invalid @enderror" id="tgl_srt_aset" name="tgl_srt_aset" value="{{ old('tgl_srt_aset') }}" required>
                                     <div class="invalid-feedback">
-                                        @error('tgl_srt_rekom_pc') {{ $message }} @enderror
+                                        @error('tgl_srt_aset') {{ $message }} @enderror
                                     </div>
                                 </div>
                             </div>
@@ -336,69 +461,11 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="mb-3">
-                                    <label for="file_rekom_pc" class="form-label required">File Keterangan PC</label>
-                                    <input type="file" class="form-control mb-1 @error('file_rekom_pc') is-invalid @enderror" id="file_rekom_pc" name="file_rekom_pc" value="{{ old('file_rekom_pc') }}" accept="application/pdf" required>
+                                    <label for="file_aset" class="form-label required">File Surat Keterangan Status Aset</label>
+                                    <input type="file" class="form-control mb-1 @error('file_aset') is-invalid @enderror" id="file_aset" name="file_aset" value="{{ old('file_aset') }}" accept="application/pdf" required>
                                     <small class="text-primary">ukuran maksimum untuk dokumen pdf 1MB</small>
                                     <div class="invalid-feedback">
-                                        @error('file_rekom_pc') {{ $message }} @enderror
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <h5 class="mt-2 mb-3">Rekomendasi Wilayah</h5>
-                        <div class="row">
-                            <div class="col-12 col-sm-6">
-                                <div class="mb-3">
-                                    <label for="nm_rekom_pw" class="form-label required">Pemberi Rekomendasi</label>
-                                    <select class="form-select  @error('nm_rekom_pw') is-invalid @enderror" id="nm_rekom_pw" name="nm_rekom_pw">
-                                        <option value="LP Ma'arif NU PWNU">LP Ma'arif NU PWNU</option>
-                                        <option value="PWNU">PWNU</option>
-                                    </select>
-                                    <div class="invalid-feedback">
-                                        @error('nm_rekom_pw') {{ $message }} @enderror
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <label for="wilayah_rekom_pw" class="form-label required">Nama Wilayah</label>
-                                <select class="selectpicker @error('wilayah_rekom_pw') is-invalid @enderror" data-show-subtext="false" data-live-search="true" name="wilayah_rekom_pw" required>
-                                    @foreach($propinsi as $row)
-                                        <option value="{{ $row->nm_prov }}" {{ strtolower($row->nm_prov) == Strings::removeFirstWord($cookieValue->propinsiluar_negeri_ln) ? 'selected' : '' }}>{{ $row->nm_prov }}</option>
-                                    @endforeach
-                                </select>
-                                <div class="invalid-feedback">
-                                    @error('wilayah_rekom_pw') {{ $message }} @enderror
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12 col-sm-6">
-                                <div class="mb-3">
-                                    <label for="no_srt_rekom_pw" class="form-label required">Nomor Surat</label>
-                                    <input type="text" class="form-control  @error('no_srt_rekom_pw') is-invalid @enderror" id="no_srt_rekom_pw" name="no_srt_rekom_pw" value="{{ old('no_srt_rekom_pw') }}" placeholder="Masukkan nomor surat dari pengurus wilayah" required>
-                                    <div class="invalid-feedback">
-                                        @error('no_srt_rekom_pw') {{ $message }} @enderror
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="mb-3">
-                                    <label for="tgl_srt_rekom_pw" class="form-label required">Tanggal Surat</label>
-                                    <input type="date" class="form-control  @error('tgl_srt_rekom_pw') is-invalid @enderror" id="tgl_srt_rekom_pw" name="tgl_srt_rekom_pw" value="{{ old('tgl_srt_rekom_pw') }}" required>
-                                    <div class="invalid-feedback">
-                                        @error('tgl_srt_rekom_pw') {{ $message }} @enderror
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="mb-3">
-                                    <label for="file_rekom_pw" class="form-label required">File Rekomendasi PW</label>
-                                    <input type="file" class="form-control mb-1  @error('file_rekom_pw') is-invalid @enderror" id="file_rekom_pw" name="file_rekom_pw" value="{{ old('file_rekom_pw') }}" accept="application/pdf" required>
-                                    <small class="text-primary">ukuran maksimum untuk dokumen pdf 1MB</small>
-                                    <div class="invalid-feedback">
-                                        @error('file_rekom_pw') {{ $message }} @enderror
+                                        @error('file_aset') {{ $message }} @enderror
                                     </div>
                                 </div>
                             </div>
@@ -544,21 +611,171 @@
             }
         })
 
-        function validateInputs(ths) {
-            let inputsValid = true;
+        /**
+         * Periksa seluruh tab sebelum benar-benar dikirim. Kalau ada yang belum lengkap,
+         * batalkan pengiriman lalu pindahkan pengguna ke tab bermasalah terdekat agar
+         * pesan validasinya langsung terlihat (tab tersembunyi tidak bisa difokuskan).
+         *
+         * Pengecekan pertama dilakukan tanpa menampilkan pesan, supaya pesan yang muncul
+         * hanya berasal dari tab yang benar-benar dituju.
+         */
+        $("form")[0].addEventListener('submit', function(e) {
+            let tabBermasalah = -1;
 
-            const inputs = ths.find("input");
-            inputs.each(function(index, input) {
-                const valid = input.checkValidity();
-                if (!valid) {
-                    inputsValid = false;
-                    input.classList.add("is-invalid");
-                } else {
-                    input.classList.remove("is-invalid");
+            tabs.each(function(i, tab) {
+                const $tab = $(tab);
+                const tersembunyi = $tab.hasClass("d-none");
+                // field di dalam display:none tidak dapat divalidasi, jadi tampilkan sekilas
+                if (tersembunyi) $tab.removeClass("d-none").css("visibility", "hidden");
+
+                // periksaField mengembalikan daftar field bermasalah, bukan boolean
+                const salah = periksaField($tab);
+
+                if (tersembunyi) $tab.addClass("d-none").css("visibility", "");
+
+                if (salah.length && tabBermasalah === -1) tabBermasalah = i;
+            });
+
+            if (tabBermasalah !== -1) {
+                e.preventDefault();
+                $(tabs[current]).addClass("d-none");
+                $(tabs_pill[current]).removeClass("active");
+                current = tabBermasalah;
+                loadFormData(current);
+                validateInputs($(tabs[current]));
+            }
+        });
+
+        /**
+         * Periksa seluruh field pada satu tab tanpa mengubah tampilan.
+         * Mengembalikan daftar field yang tidak valid beserta labelnya.
+         *
+         * Selain <input>, <select> juga diperiksa karena beberapa select bersifat wajib
+         * (kabupaten, cabang, pemberi keterangan & penerbit surat aset). Sebelumnya hanya
+         * <input> yang diperiksa sehingga field tersebut tidak pernah menampilkan pesan.
+         */
+        function periksaField(ths) {
+            const salah = [];
+
+            ths.find("input, select").each(function(index, field) {
+                // Field yang dinonaktifkan memang tidak dikirim, jadi tidak perlu diperiksa
+                if (field.disabled) return;
+                if (!field.checkValidity()) {
+                    salah.push({
+                        field: field,
+                        label: labelDari($(field)),
+                        pesan: pesanField($(field), field)
+                    });
                 }
             });
-            return inputsValid;
+
+            return salah;
         }
+
+        /**
+         * Susun pesan kesalahan satu field.
+         * Urutan prioritas: data-pesan milik field -> pesan bawaan browser (diterjemahkan
+         * seperlunya) -> pesan umum. Field yang formatnya salah (pattern/type) dibedakan
+         * dari field yang sekadar masih kosong, supaya pesannya informatif.
+         */
+        function pesanField($field, field) {
+            const khusus = $field.attr('data-pesan');
+            if (khusus) return khusus;
+
+            const v = field.validity;
+            if (v.valueMissing) return 'wajib diisi.';
+            if (v.patternMismatch || v.typeMismatch || v.badInput) return 'format isian belum sesuai.';
+            if (v.tooShort) return 'isian kurang dari ' + field.minLength + ' karakter.';
+            if (v.tooLong) return 'isian melebihi ' + field.maxLength + ' karakter.';
+            if (v.rangeUnderflow || v.rangeOverflow) return 'nilai di luar rentang yang diizinkan.';
+            return field.validationMessage || 'isian belum sesuai.';
+        }
+
+        /**
+         * Validasi satu tab: tandai field yang salah dan tampilkan pesan di atas form.
+         */
+        function validateInputs(ths) {
+            const salah = periksaField(ths);
+
+            // bersihkan penanda lama lebih dulu
+            ths.find("input, select").each(function(index, field) {
+                const $field = $(field);
+                const $pembungkus = $field.closest('.bootstrap-select');
+                const $sasaran = $pembungkus.length ? $pembungkus : $field;
+                const namaSalah = salah.some(function(s) { return s.field === field; });
+
+                if (namaSalah) {
+                    // bootstrap-select menyembunyikan <select> aslinya, jadi penandaannya
+                    // ditempelkan ke elemen pembungkus .bootstrap-select agar ikut terlihat.
+                    $sasaran.addClass("is-invalid");
+                    $field.addClass("is-invalid");
+                    $field.attr('aria-invalid', 'true');
+                } else {
+                    $sasaran.removeClass("is-invalid");
+                    $field.removeClass("is-invalid");
+                    $field.removeAttr('aria-invalid');
+                }
+            });
+
+            tampilkanPesanValidasi(salah);
+            return salah.length === 0;
+        }
+
+        /** Ambil label yang terbaca manusia dari sebuah field, untuk dipakai di pesan. */
+        function labelDari($field) {
+            const id = $field.attr('id');
+            if (id) {
+                const teks = $('label[for="' + id + '"]').first().text().trim();
+                if (teks) return teks;
+            }
+            const placeholder = $field.attr('placeholder');
+            if (placeholder) return placeholder;
+            return $field.attr('name') || 'Field';
+        }
+
+        /** Tampilkan / sembunyikan kotak pesan kesalahan di atas form. */
+        function tampilkanPesanValidasi(salah) {
+            const $alert = $("#alert-validasi");
+            if (!salah.length) {
+                $alert.addClass("d-none").empty();
+                return;
+            }
+
+            const aman = function(teks) { return $('<div>').text(teks).html(); };
+
+            const daftar = salah.slice(0, 5).map(function(s) {
+                return '<li><b>' + aman(s.label) + '</b> ' + aman(s.pesan) + '</li>';
+            }).join('');
+            const sisa = salah.length > 5 ? '<li>dan ' + (salah.length - 5) + ' kolom lainnya</li>' : '';
+
+            // judul menyesuaikan: format salah vs. belum diisi
+            const semuaKosong = salah.every(function(s) { return s.pesan.indexOf('wajib diisi') === 0; });
+            const judul = semuaKosong ? 'Data belum lengkap.' : 'Ada isian yang perlu diperbaiki.';
+
+            $alert
+                .removeClass("d-none")
+                .html('<div class="alert alert-danger shadow-sm alert-dismissible" role="alert">' +
+                    '<strong>' + judul + '</strong> ' + salah.length +
+                    ' kolom pada langkah ini belum sesuai:' +
+                    '<ul class="mb-0 mt-1">' + daftar + sisa + '</ul>' +
+                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                    '</div>');
+
+            // gulir ke pesan agar langsung terlihat
+            $('html, body').animate({ scrollTop: Math.max($alert.offset().top - 120, 0) }, 250);
+        }
+
+        /**
+         * Tahun berdiri: hanya terima angka, maksimal 4 digit.
+         * Karakter selain angka dibuang saat diketik supaya pengguna tidak bisa
+         * mengirim "2018 " atau "th 2018".
+         */
+        $("input[name='thn_berdiri']").on('input', function() {
+            const bersih = this.value.replace(/\D/g, '').slice(0, 4);
+            if (this.value !== bersih) this.value = bersih;
+            // hapus penanda merah begitu isian sudah benar
+            if (this.checkValidity()) $(this).removeClass('is-invalid');
+        });
 
         $("select[name='propinsi']").on('change', function() {
 
@@ -592,14 +809,52 @@
                     $selectPc.empty();
                     $.each(res,function(key, value) {
                         $select.append('<option value=' + value.id_pc + '>' + value.nama_pc + '</option>');
-                        $selectPc.append('<option value=' + value.id_pc + '>' + value.nama_pc + '</option>');
+                        $selectPc.append('<option value="' + value.nama_pc + '">' + value.nama_pc + '</option>');
                     });
+
+                    // Daftar cabang berubah -> perbarui pilihan penerbit surat aset
+                    // bila pemberi keterangan yang dipilih adalah PCNU / PC Ma'arif NU.
+                    isiDaerahSrtAset();
 
                     $('.selectpicker').selectpicker('refresh');
                 }
             });
 
         });
+
+        // ===== Surat Keterangan Status Aset: pemberi keterangan menentukan daftar penerbit surat =====
+        const DAFTAR_CABANG  = @json($cabang->pluck('nama_pc'));
+        const DAFTAR_WILAYAH = @json($propinsi->pluck('nm_prov'));
+
+        function isiDaerahSrtAset() {
+            const pemberi   = $("#nm_srt_aset").val();
+            // PWNU & PW Ma'arif NU -> penerbitnya wilayah (provinsi)
+            // PCNU & PC Ma'arif NU -> penerbitnya cabang
+            const dariWilayah = pemberi === 'PWNU' || pemberi === "PW Ma'arif NU";
+            const $select     = $("#daerah_srt_aset");
+            const terpilih    = $select.val();
+            const pilihan     = dariWilayah ? DAFTAR_WILAYAH : DAFTAR_CABANG;
+
+            $select.empty();
+            if (!pemberi) {
+                $select.append('<option value="">-- Pilih Pemberi Keterangan --</option>');
+                $("#hint_daerah_srt_aset").hide();
+            } else {
+                $select.append('<option value="">-- Pilih ' + (dariWilayah ? 'Wilayah' : 'Cabang') + ' --</option>');
+                $.each(pilihan, function(key, nama) {
+                    $select.append('<option value="' + nama + '">' + nama + '</option>');
+                });
+                // pertahankan pilihan sebelumnya bila masih tersedia (mis. saat halaman di-reload karena validasi gagal)
+                if (terpilih && pilihan.indexOf(terpilih) !== -1) $select.val(terpilih);
+                $("#jenis_daerah_srt_aset").text(dariWilayah ? 'wilayah (provinsi)' : 'cabang');
+                $("#hint_daerah_srt_aset").show();
+            }
+
+            $select.selectpicker('refresh');
+        }
+
+        $("#nm_srt_aset").on('change', isiDaerahSrtAset);
+        isiDaerahSrtAset();
 
     </script>
 @endsection

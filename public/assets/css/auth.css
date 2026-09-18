@@ -111,6 +111,13 @@ a{text-decoration:none;}
 .sip-shell-center{align-items:center; justify-content:center;}
 .sip-success-icon{width:64px; height:64px; border-radius:50%; background:var(--sip-primary-tint); display:inline-flex; align-items:center; justify-content:center; margin-bottom:20px;}
 .sip-reg-number{font-family:'IBM Plex Mono',monospace; font-size:24px; font-weight:700; color:var(--sip-primary); letter-spacing:0.04em; padding:12px 24px; background:var(--sip-primary-tint); border-radius:12px; display:inline-block; margin-bottom:20px;}
+/* halaman sukses: seluruh isi kartu dibuat rata tengah.
+   Cukup text-align:center karena ikon (.sip-success-icon = inline-flex),
+   nomor registrasi (.sip-reg-number = inline-block) dan tombol (.sip-btn = inline)
+   semuanya elemen inline-level, sehingga ikut terpusat tanpa perlu margin:auto.
+   Dipisah dengan modifier .sip-card-success karena .sip-card h1 dipakai bersama
+   oleh halaman auth lain (login, ceknpsn, dst) yang tetap rata kiri. */
+.sip-card-success{text-align:center;}
 
 /* steapform */
 .sip-register-header{padding:40px 0 20px; text-align:center;}

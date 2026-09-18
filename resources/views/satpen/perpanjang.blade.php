@@ -241,12 +241,16 @@
                             </div>
                         </div>
 
+                        @php
+                            $filePermohonan = \App\Models\FileRegister::dataUntuk($satpenProfile->filereg, 'surat_permohonan');
+                            $fileAset = \App\Models\FileRegister::dataUntuk($satpenProfile->filereg, 'surat_aset');
+                        @endphp
                         <h5 class="my-3">Surat Permohonan</h5>
                         <div class="row">
                             <div class="col-12 col-sm-6">
                                 <div class="mb-2">
                                     <label for="no_srt_permohonan" class="form-label required">Nomor Surat</label>
-                                    <input type="text" class="form-control @error('no_srt_permohonan') is-invalid @enderror" id="no_srt_permohonan" name="no_srt_permohonan" value="{{ old('no_srt_permohonan') ?? @$satpenProfile->filereg[0]->nomor_surat }}">
+                                    <input type="text" class="form-control @error('no_srt_permohonan') is-invalid @enderror" id="no_srt_permohonan" name="no_srt_permohonan" value="{{ old('no_srt_permohonan', $filePermohonan->nomor_surat ?? '') }}">
                                     <div class="invalid-feedback">
                                         @error('no_srt_permohonan') {{ $message }} @enderror
                                     </div>
@@ -255,7 +259,7 @@
                             <div class="col-12 col-sm-6">
                                 <div class="mb-2">
                                     <label for="tgl_srt_permohonan" class="form-label required">Tanggal Surat</label>
-                                    <input type="date" class="form-control @error('tgl_srt_permohonan') is-invalid @enderror" id="tgl_srt_permohonan" name="tgl_srt_permohonan" value="{{ old('tgl_srt_permohonan') ?? @$satpenProfile->filereg[0]->tgl_surat }}">
+                                    <input type="date" class="form-control @error('tgl_srt_permohonan') is-invalid @enderror" id="tgl_srt_permohonan" name="tgl_srt_permohonan" value="{{ old('tgl_srt_permohonan', $filePermohonan->tgl_surat ?? '') }}">
                                     <div class="invalid-feedback">
                                         @error('tgl_srt_permohonan') {{ $message }} @enderror
                                     </div>
@@ -273,48 +277,158 @@
                                 </div>
                             </div>
                         </div>
-                        <h5 class="my-3">Surat Keterangan Cabang</h5>
+                        {{--
+                            Rekomendasi Cabang & Rekomendasi Wilayah dinonaktifkan sementara sehingga
+                            box-nya dimasukkan ke collapse di atas Surat Keterangan Status Aset.
+                            Input di dalamnya TETAP ada namun diberi atribut disabled agar tidak bisa
+                            diisi, tidak ikut terkirim, dan tidak memblokir submit.
+                            Untuk mengaktifkan kembali: hapus atribut 'disabled' pada input di bawah.
+                        --}}
+                        <div class="rekomendasi-nonaktif">
+                            <button class="btn btn-sm btn-light-secondary text-secondary w-100 d-flex align-items-center mt-4 mb-2"
+                                    type="button" data-bs-toggle="collapse" data-bs-target="#collapse-rekom-nonaktif"
+                                    aria-expanded="false" aria-controls="collapse-rekom-nonaktif">
+                                <i class="ti ti-chevron-down me-1"></i>
+                                Surat Keterangan Cabang &amp; Rekomendasi Wilayah (Nonaktif)
+                            </button>
+                            <div class="collapse pt-2 border-top border-2" id="collapse-rekom-nonaktif">
+    
+                                <h5 class="my-3 text-muted">Surat Keterangan Cabang
+                                    <span class="badge bg-light-secondary text-secondary ms-1">Nonaktif</span>
+                                </h5>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <div class="mb-2">
+                                            <label for="nm_rekom_pc" class="form-label text-muted">Pemberi Keterangan</label>
+                                            <select class="form-select" id="nm_rekom_pc" name="nm_rekom_pc" disabled>
+                                                <option value="LP Ma'arif PCNU">LP Ma'arif PCNU</option>
+                                                <option value="PCNU">PCNU</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <label for="cabang_rekom_pc" class="form-label text-muted">Nama Cabang</label>
+                                        <select class="form-select" name="cabang_rekom_pc" disabled>
+                                            @foreach($cabang as $row)
+                                                <option value="{{ $row->nama_pc }}">{{ $row->nama_pc }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <div class="mb-2">
+                                            <label for="no_srt_rekom_pc" class="form-label text-muted">Nomor Surat</label>
+                                            <input type="text" class="form-control" id="no_srt_rekom_pc" name="no_srt_rekom_pc" value="{{ old('no_srt_rekom_pc') }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <div class="mb-2">
+                                            <label for="tgl_srt_rekom_pc" class="form-label text-muted">Tanggal Surat</label>
+                                            <input type="date" class="form-control" id="tgl_srt_rekom_pc" name="tgl_srt_rekom_pc" value="{{ old('tgl_srt_rekom_pc') }}" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="mb-2">
+                                            <label for="file_rekom_pc" class="form-label text-muted">File Keterangan PC</label>
+                                            <input type="file" class="form-control" id="file_rekom_pc" name="file_rekom_pc" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h5 class="my-3 text-muted">Rekomendasi Wilayah
+                                    <span class="badge bg-light-secondary text-secondary ms-1">Nonaktif</span>
+                                </h5>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <div class="mb-2">
+                                            <label for="nm_rekom_pw" class="form-label text-muted">Pemberi Rekomendasi</label>
+                                            <select class="form-select" id="nm_rekom_pw" name="nm_rekom_pw" disabled>
+                                                <option value="LP Ma'arif PWNU">LP Ma'arif PWNU</option>
+                                                <option value="PWNU">PWNU</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <label for="wilayah_rekom_pw" class="form-label text-muted">Nama Wilayah</label>
+                                        <select class="form-select" name="wilayah_rekom_pw" disabled>
+                                            @foreach($propinsi as $row)
+                                                <option value="{{ $row->nm_prov }}">{{ $row->nm_prov }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <div class="mb-2">
+                                            <label for="no_srt_rekom_pw" class="form-label text-muted">Nomor Surat</label>
+                                            <input type="text" class="form-control" id="no_srt_rekom_pw" name="no_srt_rekom_pw" value="{{ old('no_srt_rekom_pw') }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <div class="mb-2">
+                                            <label for="tgl_srt_rekom_pw" class="form-label text-muted">Tanggal Surat</label>
+                                            <input type="date" class="form-control" id="tgl_srt_rekom_pw" name="tgl_srt_rekom_pw" value="{{ old('tgl_srt_rekom_pw') }}" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="mb-2">
+                                            <label for="file_rekom_pw" class="form-label text-muted">File Rekomendasi PW</label>
+                                            <input type="file" class="form-control" id="file_rekom_pw" name="file_rekom_pw" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5 class="my-3">Surat Keterangan Status Aset</h5>
                         <div class="row">
                             <div class="col-12 col-sm-6">
                                 <div class="mb-2">
-                                    <label for="nm_rekom_pc" class="form-label required">Pemberi Keterangan</label>
-                                    <select class="form-select @error('nm_rekom_pc') is-invalid @enderror" id="nm_rekom_pc" name="nm_rekom_pc">
-                                        <option value="LP Ma'arif PCNU" {{@$satpenProfile->filereg[1]->nm_lembaga == "LP Ma'arif PCNU" ? 'selected' : ''}}>LP Ma'arif PCNU</option>
-                                        <option value="PCNU" {{@$satpenProfile->filereg[1]->nm_lembaga == 'PCNU' ? 'selected' : ''}}>PCNU</option>
+                                    <label for="nm_srt_aset" class="form-label required">Pemberi Keterangan</label>
+                                    <select class="form-select @error('nm_srt_aset') is-invalid @enderror" id="nm_srt_aset" name="nm_srt_aset">
+                                        <option value="PCNU" {{ old('nm_srt_aset', $fileAset->nm_lembaga ?? '') == 'PCNU' ? 'selected' : '' }}>PCNU</option>
+                                        <option value="PC Ma'arif NU" {{ old('nm_srt_aset', $fileAset->nm_lembaga ?? '') == "PC Ma'arif NU" ? 'selected' : '' }}>PC Ma'arif NU</option>
+                                        <option value="PWNU" {{ old('nm_srt_aset', $fileAset->nm_lembaga ?? '') == 'PWNU' ? 'selected' : '' }}>PWNU</option>
+                                        <option value="PW Ma'arif NU" {{ old('nm_srt_aset', $fileAset->nm_lembaga ?? '') == "PW Ma'arif NU" ? 'selected' : '' }}>PW Ma'arif NU</option>
                                     </select>
                                     <div class="invalid-feedback">
-                                        @error('nm_rekom_pc') {{ $message }} @enderror
+                                        @error('nm_srt_aset') {{ $message }} @enderror
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
-                                <label for="cabang_rekom_pc" class="form-label required">Nama Cabang</label>
-                                <select class="form-select @error('cabang_rekom_pc') is-invalid @enderror" name="cabang_rekom_pc">
-                                    @foreach($cabang as $row)
-                                        <option value="{{ $row->nama_pc }}" {{@$satpenProfile->filereg[1]->daerah == $row->nama_pc ? 'selected' : ''}}>{{ $row->nama_pc }}</option>
-                                    @endforeach
+                                <label for="daerah_srt_aset" class="form-label required" id="label_daerah_srt_aset">Nama Penerbit Surat</label>
+                                <select class="form-select @error('daerah_srt_aset') is-invalid @enderror" id="daerah_srt_aset" name="daerah_srt_aset">
+                                    <option value="">-- Pilih Pemberi Keterangan --</option>
                                 </select>
+                                <small class="text-primary" id="hint_daerah_srt_aset" style="display:none;">
+                                    Menampilkan daftar <span id="jenis_daerah_srt_aset"></span> sesuai pemberi keterangan yang dipilih.
+                                </small>
                                 <div class="invalid-feedback">
-                                    @error('cabang_rekom_pc') {{ $message }} @enderror
+                                    @error('daerah_srt_aset') {{ $message }} @enderror
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-12 col-sm-6">
                                 <div class="mb-2">
-                                    <label for="no_srt_rekom_pc" class="form-label required">Nomor Surat</label>
-                                    <input type="text" class="form-control @error('no_srt_rekom_pc') is-invalid @enderror" id="no_srt_rekom_pc" name="no_srt_rekom_pc" value="{{ old('no_srt_rekom_pc') ?? @$satpenProfile->filereg[1]->nomor_surat }}">
+                                    <label for="no_srt_aset" class="form-label required">Nomor Surat</label>
+                                    <input type="text" class="form-control @error('no_srt_aset') is-invalid @enderror" id="no_srt_aset" name="no_srt_aset" value="{{ old('no_srt_aset', $fileAset->nomor_surat ?? '') }}">
                                     <div class="invalid-feedback">
-                                        @error('no_srt_rekom_pc') {{ $message }} @enderror
+                                        @error('no_srt_aset') {{ $message }} @enderror
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="mb-2">
-                                    <label for="tgl_srt_rekom_pc" class="form-label required">Tanggal Surat</label>
-                                    <input type="date" class="form-control @error('tgl_srt_rekom_pc') is-invalid @enderror" id="tgl_srt_rekom_pc" name="tgl_srt_rekom_pc" value="{{ old('no_srt_rekom_pc') ?? @$satpenProfile->filereg[1]->tgl_surat }}">
+                                    <label for="tgl_srt_aset" class="form-label required">Tanggal Surat</label>
+                                    <input type="date" class="form-control @error('tgl_srt_aset') is-invalid @enderror" id="tgl_srt_aset" name="tgl_srt_aset" value="{{ old('tgl_srt_aset', $fileAset->tgl_surat ?? '') }}">
                                     <div class="invalid-feedback">
-                                        @error('tgl_srt_rekom_pc') {{ $message }} @enderror
+                                        @error('tgl_srt_aset') {{ $message }} @enderror
                                     </div>
                                 </div>
                             </div>
@@ -322,67 +436,11 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="mb-2">
-                                    <label for="file_rekom_pc" class="form-label required">File Keterangan PC</label>
-                                    <input type="file" class="form-control @error('file_rekom_pc') is-invalid @enderror" id="file_rekom_pc" name="file_rekom_pc">
+                                    <label for="file_aset" class="form-label {{ $fileAset ? '' : 'required' }}">File Surat Keterangan Status Aset</label>
+                                    <input type="file" class="form-control @error('file_aset') is-invalid @enderror" id="file_aset" name="file_aset" accept="application/pdf" @if(!$fileAset) required @endif>
+                                    <small class="text-primary">ukuran maksimum untuk dokumen pdf 1MB</small>
                                     <div class="invalid-feedback">
-                                        @error('file_rekom_pc') {{ $message }} @enderror
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <h5 class="my-3">Rekomendasi Wilayah</h5>
-                        <div class="row">
-                            <div class="col-12 col-sm-6">
-                                <div class="mb-2">
-                                    <label for="nm_rekom_pw" class="form-label required">Pemberi Rekomendasi</label>
-                                    <select class="form-select @error('nm_rekom_pw') is-invalid @enderror" id="nm_rekom_pw" name="nm_rekom_pw">
-                                        <option value="LP Ma'arif PWNU" {{@$satpenProfile->filereg[1]->nm_lembaga == "LP Ma'arif PWNU" ? 'selected' : ''}}>LP Ma'arif PWNU</option>
-                                        <option value="PWNU" {{@$satpenProfile->filereg[1]->nm_lembaga == 'PWNU' ? 'selected' : ''}}>PWNU</option>
-                                    </select>
-                                    <div class="invalid-feedback">
-                                        @error('nm_rekom_pw') {{ $message }} @enderror
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <label for="wilayah_rekom_pw" class="form-label required">Nama Wilayah</label>
-                                <select class="form-select @error('wilayah_rekom_pw') is-invalid @enderror" name="wilayah_rekom_pw">
-                                    @foreach($propinsi as $row)
-                                        <option value="{{ $row->nm_prov }}" {{@$satpenProfile->filereg[2]->daerah == $row->nm_prov ? 'selected' : ''}}>{{ $row->nm_prov }}</option>
-                                    @endforeach
-                                </select>
-                                <div class="invalid-feedback">
-                                    @error('wilayah_rekom_pw') {{ $message }} @enderror
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12 col-sm-6">
-                                <div class="mb-2">
-                                    <label for="no_srt_rekom_pw" class="form-label required">Nomor Surat</label>
-                                    <input type="text" class="form-control @error('no_srt_rekom_pw') is-invalid @enderror" id="no_srt_rekom_pw" name="no_srt_rekom_pw" value="{{ old('no_srt_rekom_pw') ?? @$satpenProfile->filereg[2]->nomor_surat }}">
-                                    <div class="invalid-feedback">
-                                        @error('no_srt_rekom_pw') {{ $message }} @enderror
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="mb-2">
-                                    <label for="tgl_srt_rekom_pw" class="form-label required">Tanggal Surat</label>
-                                    <input type="date" class="form-control @error('tgl_srt_rekom_pw') is-invalid @enderror" id="tgl_srt_rekom_pw" name="tgl_srt_rekom_pw" value="{{ old('tgl_srt_rekom_pw') ?? @$satpenProfile->filereg[2]->tgl_surat }}">
-                                    <div class="invalid-feedback">
-                                        @error('tgl_srt_rekom_pw') {{ $message }} @enderror
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="mb-2">
-                                    <label for="file_rekom_pw" class="form-label required">File Rekomendasi PW</label>
-                                    <input type="file" class="form-control @error('file_rekom_pw') is-invalid @enderror" id="file_rekom_pw" name="file_rekom_pw">
-                                    <div class="invalid-feedback">
-                                        @error('file_rekom_pw') {{ $message }} @enderror
+                                        @error('file_aset') {{ $message }} @enderror
                                     </div>
                                 </div>
                             </div>
@@ -442,13 +500,45 @@
                     $selectcabang.empty();
                     $.each(res,function(key, value) {
                         $select.append('<option value=' + value.id_pc + '>' + value.nama_pc + '</option>');
-                        $selectcabang.append('<option value=' + value.id_pc + '>' + value.nama_pc + '</option>');
+                        $selectcabang.append('<option value="' + value.nama_pc + '">' + value.nama_pc + '</option>');
                     });
 
                 }
             });
 
         });
+
+        // ===== Surat Keterangan Status Aset: pemberi keterangan menentukan daftar penerbit surat =====
+        const DAFTAR_CABANG  = @json($cabang->pluck('nama_pc'));
+        const DAFTAR_WILAYAH = @json($propinsi->pluck('nm_prov'));
+
+        function isiDaerahSrtAset() {
+            const pemberi   = $("#nm_srt_aset").val();
+            // PWNU & PW Ma'arif NU -> penerbitnya wilayah (provinsi)
+            // PCNU & PC Ma'arif NU -> penerbitnya cabang
+            const dariWilayah = pemberi === 'PWNU' || pemberi === "PW Ma'arif NU";
+            const $select     = $("#daerah_srt_aset");
+            const terpilih    = $select.val();
+            const pilihan     = dariWilayah ? DAFTAR_WILAYAH : DAFTAR_CABANG;
+
+            $select.empty();
+            if (!pemberi) {
+                $select.append('<option value="">-- Pilih Pemberi Keterangan --</option>');
+                $("#hint_daerah_srt_aset").hide();
+            } else {
+                $select.append('<option value="">-- Pilih ' + (dariWilayah ? 'Wilayah' : 'Cabang') + ' --</option>');
+                $.each(pilihan, function(key, nama) {
+                    $select.append('<option value="' + nama + '">' + nama + '</option>');
+                });
+                // pertahankan pilihan yang tersimpan saat halaman dimuat
+                if (terpilih && pilihan.indexOf(terpilih) !== -1) $select.val(terpilih);
+                $("#jenis_daerah_srt_aset").text(dariWilayah ? 'wilayah (provinsi)' : 'cabang');
+                $("#hint_daerah_srt_aset").show();
+            }
+        }
+
+        $("#nm_srt_aset").on('change', isiDaerahSrtAset);
+        isiDaerahSrtAset();
 
     </script>
 
