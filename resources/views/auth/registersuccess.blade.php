@@ -8,9 +8,9 @@
 @endsection
 
 @section('container')
-{{-- sip-shell-center: .sip-shell hanya flex biasa tanpa perataan, sehingga kartu
-     tampil di kiri atas. Kelas ini menambahkan align-items & justify-content center.
-     sip-card-success: memusatkan ikon centang & judul khusus halaman ini. --}}
+{{-- sip-shell-center: .sip-shell is a plain flex container without alignment, so the
+     card would sit in the top-left corner. This class adds align-items & justify-content
+     center. sip-card-success: centres the check icon & heading for this page only. --}}
 <div class="sip-shell sip-shell-center">
     <div class="sip-card sip-card-success">
         <a href="{{ route('home') }}" class="sip-brand"><img src="{{ asset('assets/images/logos/Logo_Sipinter_Panjang.png') }}" alt="SIPINTER"></a>

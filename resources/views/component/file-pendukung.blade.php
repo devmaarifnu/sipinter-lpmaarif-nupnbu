@@ -1,23 +1,23 @@
 {{--
     Partial "File Pendukung".
 
-    Menampilkan box dokumen pendukung satpen. Dokumen rekomendasi pengurus cabang (rekom_pc)
-    dan pengurus wilayah (rekom_pw) dinonaktifkan sementara, sehingga box-nya tidak langsung
-    ditampilkan melainkan dimasukkan ke dalam collapse yang bisa dibuka-tutup.
+    Renders the satpen supporting document boxes. The cabang (rekom_pc) and wilayah
+    (rekom_pw) recommendation documents are temporarily disabled, so their boxes are not
+    shown inline but placed inside a collapse the user can toggle.
 
-    Parameter:
-    - $attrs   : atribut tambahan pada pembungkus, mis. 'col-sm-6 px-3' atau 'col-sm-4 px-3'
-    - $filereg : koleksi App\Models\FileRegister
-    - $prefix  : awalan id collapse agar unik di tiap halaman/pemanggilan
+    Parameters:
+    - $attrs   : extra attributes on the wrapper, e.g. 'col-sm-6 px-3' or 'col-sm-4 px-3'
+    - $filereg : a collection of App\Models\FileRegister
+    - $prefix  : collapse id prefix, to keep ids unique per page/include call
 
-    Pakai:  @include('component.file-pendukung', ['attrs' => 'col-sm-6 px-3', 'prefix' => 'detail', 'filereg' => $satpenProfile->filereg])
+    Usage:  @include('component.file-pendukung', ['attrs' => 'col-sm-6 px-3', 'prefix' => 'detail', 'filereg' => $satpenProfile->filereg])
 --}}
 @php
     $prefix = $prefix ?? 'fp';
     $attrs = $attrs ?? 'col-sm-6 px-3';
 
     /**
-     * Dokumen nonaktif = rekomendasi pengurus cabang & pengurus wilayah.
+     * Disabled documents = cabang & wilayah recommendation documents.
      */
     $dokumenAktif = $filereg->reject(fn ($row) => in_array($row->mapfile, ['rekom_pc', 'rekom_pw']));
     $dokumenNonaktif = $filereg->filter(fn ($row) => in_array($row->mapfile, ['rekom_pc', 'rekom_pw']));
@@ -26,7 +26,7 @@
 <div class="{{ $attrs }}">
     <h5 class="mb-2 fs-4">File Pendukung</h5>
 
-    {{-- Dokumen aktif: surat permohonan & surat keterangan status aset --}}
+    {{-- Active documents: application letter & letter of asset status --}}
     @foreach ($dokumenAktif as $row)
         <div class="mb-3 px-3 py-2 card-box-detail">
             <h6 class="text-capitalize">{{ Strings::replaceMapFile($row->mapfile) }}</h6>
@@ -41,7 +41,7 @@
         </div>
     @endforeach
 
-    {{-- Dokumen nonaktif: disembunyikan di dalam collapse --}}
+    {{-- Disabled documents: tucked away inside a collapse --}}
     @if ($dokumenNonaktif->isNotEmpty())
         <button class="btn btn-sm btn-light-secondary text-secondary w-100 d-flex align-items-center mb-2"
                 type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $prefix }}"

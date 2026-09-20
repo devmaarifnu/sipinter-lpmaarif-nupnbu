@@ -33,8 +33,8 @@ class Strings
     public static function replaceMapFile($mapfile)
     {
         /**
-         * Dicocokkan lebih dulu agar 'surat aset' tidak ikut terbaca
-         * sebagai 'pengurus cabang' karena mengandung kata 'pc'.
+         * Matched first so 'surat aset' is not read as 'pengurus cabang'
+         * further down, since it also contains the substring 'pc'.
          */
         if ($mapfile == "surat_aset") {
             return "surat keterangan status aset";

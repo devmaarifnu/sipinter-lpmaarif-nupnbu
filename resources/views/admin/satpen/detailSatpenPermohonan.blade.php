@@ -438,8 +438,8 @@
         }
 
         function replaceMapFile(mapfile) {
-            // Dicocokkan lebih dulu agar 'surat aset' tidak ikut terbaca
-            // sebagai 'pengurus cabang' karena mengandung kata 'pc'.
+            // Matched first so 'surat aset' is not read as 'pengurus cabang'
+            // further down, since it also contains the substring 'pc'.
             if (mapfile === "surat_aset") {
                 return "surat keterangan status aset";
             }
@@ -452,8 +452,8 @@
             return mapfile;
         }
 
-        // Dokumen rekomendasi pengurus cabang & wilayah dinonaktifkan sementara,
-        // sehingga box-nya dimasukkan ke dalam collapse terpisah.
+        // Cabang & wilayah recommendation documents are temporarily disabled, so their
+        // boxes are placed in a separate collapse.
         const MAPFILE_NONAKTIF = ['rekom_pc', 'rekom_pw'];
 
         function createTableFiles(res) {

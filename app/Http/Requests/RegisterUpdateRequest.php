@@ -31,7 +31,7 @@ class RegisterUpdateRequest extends FormRequest
             'kepsek' => 'required|string',
             'telp' => 'required|string',
             'email' => 'required|email|string',
-            // digits:4 -> wajib 4 digit ANGKA (sebelumnya 'size:4' hanya menghitung karakter)
+            // digits:4 requires exactly 4 DIGITS (the previous 'size:4' only counted characters)
             'thn_berdiri' => 'required|digits:4',
             'kelurahan' => 'required|string',
             'alamat' => 'required|string',
@@ -39,8 +39,8 @@ class RegisterUpdateRequest extends FormRequest
             'nm_pemilik' => 'required|string',
             'no_srt_permohonan' => 'required',
             'tgl_srt_permohonan' => 'required',
-            // Rekomendasi cabang & wilayah dinonaktifkan sementara, rule-nya
-            // disimpan di sini agar mudah diaktifkan kembali bila dibutuhkan.
+            // Cabang & wilayah recommendations are temporarily disabled. The rules are
+            // kept here, commented out, so they can be re-enabled when needed.
             // 'nm_rekom_pc' => 'required',
             // 'cabang_rekom_pc' => 'required',
             // 'no_srt_rekom_pc' => 'required',
@@ -90,7 +90,7 @@ class RegisterUpdateRequest extends FormRequest
             'nm_pemilik.string' => 'Nama pemilik harus berupa teks.',
             'no_srt_permohonan.required' => 'Nomor surat permohonan wajib diisi.',
             'tgl_srt_permohonan.required' => 'Tanggal surat permohonan wajib diisi.',
-            // Pesan rekomendasi cabang & wilayah dinonaktifkan sementara.
+            // Messages for the cabang & wilayah recommendations are temporarily disabled.
             // 'nm_rekom_pc.required' => 'Pemberi keterangan cabang wajib diisi.',
             // 'cabang_rekom_pc.required' => 'Nama cabang wajib dipilih.',
             // 'no_srt_rekom_pc.required' => 'Nomor surat keterangan cabang wajib diisi.',

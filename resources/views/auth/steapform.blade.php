@@ -612,12 +612,12 @@
         })
 
         /**
-         * Periksa seluruh tab sebelum benar-benar dikirim. Kalau ada yang belum lengkap,
-         * batalkan pengiriman lalu pindahkan pengguna ke tab bermasalah terdekat agar
-         * pesan validasinya langsung terlihat (tab tersembunyi tidak bisa difokuskan).
+         * Check every tab before the form is actually submitted. If anything is missing,
+         * cancel the submission and move the user to the nearest offending tab so the
+         * validation messages are immediately visible (hidden tabs cannot be focused).
          *
-         * Pengecekan pertama dilakukan tanpa menampilkan pesan, supaya pesan yang muncul
-         * hanya berasal dari tab yang benar-benar dituju.
+         * The first pass runs without rendering messages, so that only the tab the user
+         * is taken to produces visible output.
          */
         $("form")[0].addEventListener('submit', function(e) {
             let tabBermasalah = -1;
@@ -625,11 +625,11 @@
             tabs.each(function(i, tab) {
                 const $tab = $(tab);
                 const tersembunyi = $tab.hasClass("d-none");
-                // field di dalam display:none tidak dapat divalidasi, jadi tampilkan sekilas
+                // fields inside display:none cannot be validated, so reveal them briefly
                 if (tersembunyi) $tab.removeClass("d-none").css("visibility", "hidden");
 
-                // periksaField mengembalikan daftar field bermasalah, bukan boolean
-                const salah = periksaField($tab);
+                // findInvalidFields returns the list of offending fields, not a boolean
+                const salah = findInvalidFields($tab);
 
                 if (tersembunyi) $tab.addClass("d-none").css("visibility", "");
 
@@ -647,24 +647,24 @@
         });
 
         /**
-         * Periksa seluruh field pada satu tab tanpa mengubah tampilan.
-         * Mengembalikan daftar field yang tidak valid beserta labelnya.
+         * Check every field on a single tab without changing the display.
+         * Returns the list of invalid fields along with their labels.
          *
-         * Selain <input>, <select> juga diperiksa karena beberapa select bersifat wajib
-         * (kabupaten, cabang, pemberi keterangan & penerbit surat aset). Sebelumnya hanya
-         * <input> yang diperiksa sehingga field tersebut tidak pernah menampilkan pesan.
+         * <select> is checked in addition to <input> because several selects are required
+         * (kabupaten, cabang, asset letter issuer & recipient). Previously only <input>
+         * was checked, so those fields never surfaced a message.
          */
-        function periksaField(ths) {
+        function findInvalidFields(ths) {
             const salah = [];
 
             ths.find("input, select").each(function(index, field) {
-                // Field yang dinonaktifkan memang tidak dikirim, jadi tidak perlu diperiksa
+                // Disabled fields are not submitted, so there is no point checking them
                 if (field.disabled) return;
                 if (!field.checkValidity()) {
                     salah.push({
                         field: field,
-                        label: labelDari($(field)),
-                        pesan: pesanField($(field), field)
+                        label: labelForField($(field)),
+                        pesan: messageForField($(field), field)
                     });
                 }
             });
@@ -673,12 +673,13 @@
         }
 
         /**
-         * Susun pesan kesalahan satu field.
-         * Urutan prioritas: data-pesan milik field -> pesan bawaan browser (diterjemahkan
-         * seperlunya) -> pesan umum. Field yang formatnya salah (pattern/type) dibedakan
-         * dari field yang sekadar masih kosong, supaya pesannya informatif.
+         * Build the error message for a single field.
+         * Priority order: the field's own data-pesan -> the browser default message
+         * (translated as needed) -> a generic message. Fields with a malformed value
+         * (pattern/type) are distinguished from fields that are merely empty, so the
+         * message is actually informative.
          */
-        function pesanField($field, field) {
+        function messageForField($field, field) {
             const khusus = $field.attr('data-pesan');
             if (khusus) return khusus;
 
@@ -692,12 +693,12 @@
         }
 
         /**
-         * Validasi satu tab: tandai field yang salah dan tampilkan pesan di atas form.
+         * Validate a single tab: mark the offending fields and show the message above the form.
          */
         function validateInputs(ths) {
-            const salah = periksaField(ths);
+            const salah = findInvalidFields(ths);
 
-            // bersihkan penanda lama lebih dulu
+            // clear the previous markers first
             ths.find("input, select").each(function(index, field) {
                 const $field = $(field);
                 const $pembungkus = $field.closest('.bootstrap-select');
@@ -705,8 +706,8 @@
                 const namaSalah = salah.some(function(s) { return s.field === field; });
 
                 if (namaSalah) {
-                    // bootstrap-select menyembunyikan <select> aslinya, jadi penandaannya
-                    // ditempelkan ke elemen pembungkus .bootstrap-select agar ikut terlihat.
+                    // bootstrap-select hides the original <select>, so the marker is also
+                    // applied to the .bootstrap-select wrapper element to keep it visible.
                     $sasaran.addClass("is-invalid");
                     $field.addClass("is-invalid");
                     $field.attr('aria-invalid', 'true');
@@ -717,12 +718,12 @@
                 }
             });
 
-            tampilkanPesanValidasi(salah);
+            renderValidationAlert(salah);
             return salah.length === 0;
         }
 
-        /** Ambil label yang terbaca manusia dari sebuah field, untuk dipakai di pesan. */
-        function labelDari($field) {
+        /** Get the human-readable label of a field, for use in messages. */
+        function labelForField($field) {
             const id = $field.attr('id');
             if (id) {
                 const teks = $('label[for="' + id + '"]').first().text().trim();
@@ -733,8 +734,8 @@
             return $field.attr('name') || 'Field';
         }
 
-        /** Tampilkan / sembunyikan kotak pesan kesalahan di atas form. */
-        function tampilkanPesanValidasi(salah) {
+        /** Show / hide the error message box above the form. */
+        function renderValidationAlert(salah) {
             const $alert = $("#alert-validasi");
             if (!salah.length) {
                 $alert.addClass("d-none").empty();
@@ -748,7 +749,7 @@
             }).join('');
             const sisa = salah.length > 5 ? '<li>dan ' + (salah.length - 5) + ' kolom lainnya</li>' : '';
 
-            // judul menyesuaikan: format salah vs. belum diisi
+            // the heading adapts: wrong format vs. not filled in yet
             const semuaKosong = salah.every(function(s) { return s.pesan.indexOf('wajib diisi') === 0; });
             const judul = semuaKosong ? 'Data belum lengkap.' : 'Ada isian yang perlu diperbaiki.';
 
@@ -761,19 +762,19 @@
                     '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
                     '</div>');
 
-            // gulir ke pesan agar langsung terlihat
+            // scroll to the message so it is immediately visible
             $('html, body').animate({ scrollTop: Math.max($alert.offset().top - 120, 0) }, 250);
         }
 
         /**
-         * Tahun berdiri: hanya terima angka, maksimal 4 digit.
-         * Karakter selain angka dibuang saat diketik supaya pengguna tidak bisa
-         * mengirim "2018 " atau "th 2018".
+         * thn_berdiri: accept digits only, at most 4.
+         * Non-digit characters are stripped as the user types so they cannot submit
+         * "2018 " or "th 2018".
          */
         $("input[name='thn_berdiri']").on('input', function() {
             const bersih = this.value.replace(/\D/g, '').slice(0, 4);
             if (this.value !== bersih) this.value = bersih;
-            // hapus penanda merah begitu isian sudah benar
+            // drop the red marker as soon as the value is valid
             if (this.checkValidity()) $(this).removeClass('is-invalid');
         });
 
@@ -812,9 +813,9 @@
                         $selectPc.append('<option value="' + value.nama_pc + '">' + value.nama_pc + '</option>');
                     });
 
-                    // Daftar cabang berubah -> perbarui pilihan penerbit surat aset
-                    // bila pemberi keterangan yang dipilih adalah PCNU / PC Ma'arif NU.
-                    isiDaerahSrtAset();
+                    // The cabang list changed -> refresh the asset letter issuer options
+                    // when the selected issuer is PCNU / PC Ma'arif NU.
+                    fillSrtAsetRegionOptions();
 
                     $('.selectpicker').selectpicker('refresh');
                 }
@@ -822,14 +823,14 @@
 
         });
 
-        // ===== Surat Keterangan Status Aset: pemberi keterangan menentukan daftar penerbit surat =====
+        // ===== Letter of Asset Status: the issuer determines the available region list =====
         const DAFTAR_CABANG  = @json($cabang->pluck('nama_pc'));
         const DAFTAR_WILAYAH = @json($propinsi->pluck('nm_prov'));
 
-        function isiDaerahSrtAset() {
+        function fillSrtAsetRegionOptions() {
             const pemberi   = $("#nm_srt_aset").val();
-            // PWNU & PW Ma'arif NU -> penerbitnya wilayah (provinsi)
-            // PCNU & PC Ma'arif NU -> penerbitnya cabang
+            // PWNU & PW Ma'arif NU -> issued by wilayah (province)
+            // PCNU & PC Ma'arif NU -> issued by cabang (district)
             const dariWilayah = pemberi === 'PWNU' || pemberi === "PW Ma'arif NU";
             const $select     = $("#daerah_srt_aset");
             const terpilih    = $select.val();
@@ -844,7 +845,8 @@
                 $.each(pilihan, function(key, nama) {
                     $select.append('<option value="' + nama + '">' + nama + '</option>');
                 });
-                // pertahankan pilihan sebelumnya bila masih tersedia (mis. saat halaman di-reload karena validasi gagal)
+                // keep the previous selection when it is still available (e.g. when the page
+                // is reloaded after a failed validation)
                 if (terpilih && pilihan.indexOf(terpilih) !== -1) $select.val(terpilih);
                 $("#jenis_daerah_srt_aset").text(dariWilayah ? 'wilayah (provinsi)' : 'cabang');
                 $("#hint_daerah_srt_aset").show();
@@ -853,8 +855,8 @@
             $select.selectpicker('refresh');
         }
 
-        $("#nm_srt_aset").on('change', isiDaerahSrtAset);
-        isiDaerahSrtAset();
+        $("#nm_srt_aset").on('change', fillSrtAsetRegionOptions);
+        fillSrtAsetRegionOptions();
 
     </script>
 @endsection

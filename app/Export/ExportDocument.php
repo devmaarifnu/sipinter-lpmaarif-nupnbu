@@ -92,13 +92,13 @@ class ExportDocument
 
                 if (GenerateQr::make($satpenProfile->file[1]->qrcode, $qrPath)) {
                     /**
-                     * Dokumen diambil berdasarkan mapfile, bukan urutan baris.
-                     * Data rekomendasi PC/PW kini opsional karena kolom tersebut
-                     * dinonaktifkan pada form registrasi/revisi.
+                     * Documents are looked up by mapfile instead of row order.
+                     * PC/PW recommendation data is now optional because those
+                     * fields are disabled on the registration/revision form.
                      */
-                    $filePermohonan = FileRegister::dataUntuk($satpenProfile->filereg, 'surat_permohonan');
-                    $fileRekomPC = FileRegister::dataUntuk($satpenProfile->filereg, 'rekom_pc');
-                    $fileRekomPW = FileRegister::dataUntuk($satpenProfile->filereg, 'rekom_pw');
+                    $filePermohonan = FileRegister::findByMapfile($satpenProfile->filereg, 'surat_permohonan');
+                    $fileRekomPC = FileRegister::findByMapfile($satpenProfile->filereg, 'rekom_pc');
+                    $fileRekomPW = FileRegister::findByMapfile($satpenProfile->filereg, 'rekom_pw');
 
                     $templateDocument->setValue('nomor', $satpenProfile->no_urut);
                     $templateDocument->setValue('tahuntop', date('Y'));
