@@ -32,8 +32,8 @@ class RegisterRequest extends FormRequest
             'kepsek' => 'required|string',
             'telp' => 'required|string',
             'email' => 'required|email|string|unique:satpen,email',
-            // digits:4 -> wajib 4 digit ANGKA. Sebelumnya 'size:4' hanya menghitung
-            // jumlah karakter, sehingga "20ab" lolos validasi.
+            // digits:4 requires exactly 4 DIGITS. The previous 'size:4' only counted
+            // characters, so values like "20ab" passed validation.
             'thn_berdiri' => 'required|digits:4',
             'kelurahan' => 'required|string',
             'alamat' => 'required|string',
@@ -44,8 +44,8 @@ class RegisterRequest extends FormRequest
             'no_srt_permohonan' => 'required',
             'tgl_srt_permohonan' => 'required',
             'file_permohonan' => 'required|file|mimes:pdf|max:1024',
-            // Rekomendasi cabang & wilayah dinonaktifkan sementara, rule-nya
-            // disimpan di sini agar mudah diaktifkan kembali bila dibutuhkan.
+            // Cabang & wilayah recommendations are temporarily disabled. The rules are
+            // kept here, commented out, so they can be re-enabled when needed.
             // 'nm_rekom_pc' => 'required',
             // 'cabang_rekom_pc' => 'required',
             // 'no_srt_rekom_pc' => 'required',
@@ -112,7 +112,7 @@ class RegisterRequest extends FormRequest
             'file_permohonan.file' => 'File permohonan harus berupa berkas.',
             'file_permohonan.mimes' => 'File permohonan harus berformat PDF.',
             'file_permohonan.max' => 'Ukuran file permohonan maksimal 1 MB.',
-            // Pesan rekomendasi cabang & wilayah dinonaktifkan sementara.
+            // Messages for the cabang & wilayah recommendations are temporarily disabled.
             // 'nm_rekom_pc.required' => 'Pemberi keterangan cabang wajib diisi.',
             // 'cabang_rekom_pc.required' => 'Nama cabang wajib dipilih.',
             // 'no_srt_rekom_pc.required' => 'Nomor surat keterangan cabang wajib diisi.',

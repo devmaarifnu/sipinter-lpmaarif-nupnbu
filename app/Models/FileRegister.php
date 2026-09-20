@@ -22,14 +22,15 @@ class FileRegister extends Model
     ];
 
     /**
-     * Ambil satu file register berdasarkan jenis dokumennya.
+     * Get a single file register entry by its document type.
      *
-     * Dipakai untuk menggantikan akses berdasarkan urutan ($filereg[0], $filereg[1], ...)
-     * karena urutan baris berubah ketika rekomendasi cabang/wilayah dinonaktifkan.
+     * Replaces order-based access ($filereg[0], $filereg[1], ...) because row
+     * order is no longer stable now that the cabang/wilayah recommendations
+     * are disabled.
      *
      * @param  \Illuminate\Support\Collection|array  $filereg
      */
-    public static function dataUntuk($filereg, string $mapfile): ?self
+    public static function findByMapfile($filereg, string $mapfile): ?self
     {
         return collect($filereg)->firstWhere('mapfile', $mapfile);
     }

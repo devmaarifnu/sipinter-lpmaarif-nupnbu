@@ -86,8 +86,9 @@ class SatpenController extends Controller
                     return DB::transaction(function () use ($request, $registerNumber, $provinsi, $cabang, $makeCategorySatpen, $orderedNumber) {
                         /**
                          * Store files
-                         * Rekomendasi cabang & wilayah dinonaktifkan sementara, dokumen
-                         * pendukung yang wajib hanya surat permohonan dan surat keterangan status aset.
+                         * Cabang & wilayah recommendations are temporarily disabled, so the
+                         * only required supporting documents are the application letter
+                         * and the letter of asset status.
                          */
                         if (
                             $request->file('file_permohonan')->isValid()
@@ -208,8 +209,8 @@ class SatpenController extends Controller
                 ->with('error', 'Satpen status is not revisi or expired');
 
             /**
-             * Dokumen pendukung hanya wajib diunggah ketika satpen belum punya
-             * file register sama sekali.
+             * Supporting documents are only required when the satpen has no
+             * file register entries at all.
              */
             elseif (
                 $satpen->filereg->isEmpty() &&
@@ -236,11 +237,12 @@ class SatpenController extends Controller
                  */
                 if (!$satpen->filereg->isEmpty()) {
                     /**
-                     * Dokumen lama diambil berdasarkan mapfile, bukan urutan baris,
-                     * karena urutan berubah sejak rekomendasi cabang/wilayah dinonaktifkan.
+                     * Existing documents are looked up by mapfile instead of row
+                     * order, since the order changed once the cabang/wilayah
+                     * recommendations were disabled.
                      */
-                    $oldFilePermohonan = FileRegister::dataUntuk($satpen->filereg, 'surat_permohonan');
-                    $oldFileAset = FileRegister::dataUntuk($satpen->filereg, 'surat_aset');
+                    $oldFilePermohonan = FileRegister::findByMapfile($satpen->filereg, 'surat_permohonan');
+                    $oldFileAset = FileRegister::findByMapfile($satpen->filereg, 'surat_aset');
 
                     if (
                         $request->file('file_permohonan')
@@ -298,8 +300,8 @@ class SatpenController extends Controller
                  * Update file register
                  */
                 if (!$satpen->filereg->isEmpty()) {
-                    $oldFilePermohonan = FileRegister::dataUntuk($satpen->filereg, 'surat_permohonan');
-                    $oldFileAset = FileRegister::dataUntuk($satpen->filereg, 'surat_aset');
+                    $oldFilePermohonan = FileRegister::findByMapfile($satpen->filereg, 'surat_permohonan');
+                    $oldFileAset = FileRegister::findByMapfile($satpen->filereg, 'surat_aset');
 
                     if ($oldFilePermohonan) {
                         FileRegister::find($oldFilePermohonan->id_file)->update([

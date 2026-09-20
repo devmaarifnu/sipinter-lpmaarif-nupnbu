@@ -242,8 +242,8 @@
                         </div>
 
                         @php
-                            $filePermohonan = \App\Models\FileRegister::dataUntuk($satpenProfile->filereg, 'surat_permohonan');
-                            $fileAset = \App\Models\FileRegister::dataUntuk($satpenProfile->filereg, 'surat_aset');
+                            $filePermohonan = \App\Models\FileRegister::findByMapfile($satpenProfile->filereg, 'surat_permohonan');
+                            $fileAset = \App\Models\FileRegister::findByMapfile($satpenProfile->filereg, 'surat_aset');
                         @endphp
                         <h5 class="my-3">Surat Permohonan</h5>
                         <div class="row">
@@ -508,14 +508,14 @@
 
         });
 
-        // ===== Surat Keterangan Status Aset: pemberi keterangan menentukan daftar penerbit surat =====
+        // ===== Letter of Asset Status: the issuer determines the available region list =====
         const DAFTAR_CABANG  = @json($cabang->pluck('nama_pc'));
         const DAFTAR_WILAYAH = @json($propinsi->pluck('nm_prov'));
 
-        function isiDaerahSrtAset() {
+        function fillSrtAsetRegionOptions() {
             const pemberi   = $("#nm_srt_aset").val();
-            // PWNU & PW Ma'arif NU -> penerbitnya wilayah (provinsi)
-            // PCNU & PC Ma'arif NU -> penerbitnya cabang
+            // PWNU & PW Ma'arif NU -> issued by wilayah (province)
+            // PCNU & PC Ma'arif NU -> issued by cabang (district)
             const dariWilayah = pemberi === 'PWNU' || pemberi === "PW Ma'arif NU";
             const $select     = $("#daerah_srt_aset");
             const terpilih    = $select.val();
@@ -530,15 +530,15 @@
                 $.each(pilihan, function(key, nama) {
                     $select.append('<option value="' + nama + '">' + nama + '</option>');
                 });
-                // pertahankan pilihan yang tersimpan saat halaman dimuat
+                // keep the selection stored when the page was loaded
                 if (terpilih && pilihan.indexOf(terpilih) !== -1) $select.val(terpilih);
                 $("#jenis_daerah_srt_aset").text(dariWilayah ? 'wilayah (provinsi)' : 'cabang');
                 $("#hint_daerah_srt_aset").show();
             }
         }
 
-        $("#nm_srt_aset").on('change', isiDaerahSrtAset);
-        isiDaerahSrtAset();
+        $("#nm_srt_aset").on('change', fillSrtAsetRegionOptions);
+        fillSrtAsetRegionOptions();
 
     </script>
 
