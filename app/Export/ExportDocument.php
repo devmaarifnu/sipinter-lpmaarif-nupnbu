@@ -97,8 +97,9 @@ class ExportDocument
                      * fields are disabled on the registration/revision form.
                      */
                     $filePermohonan = FileRegister::findByMapfile($satpenProfile->filereg, 'surat_permohonan');
-                    $fileRekomPC = FileRegister::findByMapfile($satpenProfile->filereg, 'rekom_pc');
-                    $fileRekomPW = FileRegister::findByMapfile($satpenProfile->filereg, 'rekom_pw');
+                    $fileSrtAset = FileRegister::findByMapfile($satpenProfile->filereg, 'surat_aset');
+                    // $fileRekomPC = FileRegister::findByMapfile($satpenProfile->filereg, 'rekom_pc');
+                    // $fileRekomPW = FileRegister::findByMapfile($satpenProfile->filereg, 'rekom_pw');
 
                     $templateDocument->setValue('nomor', $satpenProfile->no_urut);
                     $templateDocument->setValue('tahuntop', date('Y'));
@@ -107,15 +108,20 @@ class ExportDocument
                     $templateDocument->setValue('nosrtsatpen', $filePermohonan->nomor_surat ?? '');
                     $templateDocument->setValue('tglsuratsatpen', $filePermohonan ? Date::tglMasehi($filePermohonan->tgl_surat) : '');
 
-                    $templateDocument->setValue('nmlembagapc', $fileRekomPC->nm_lembaga ?? '');
-                    $templateDocument->setValue('pc', $fileRekomPC->daerah ?? '');
-                    $templateDocument->setValue('nosrtpc', $fileRekomPC->nomor_surat ?? '');
-                    $templateDocument->setValue('tglsrtpc', $fileRekomPC ? Date::tglMasehi($fileRekomPC->tgl_surat) : '');
+                    $templateDocument->setValue('nmlembaga', $fileSrtAset->nm_lembaga ?? '');
+                    $templateDocument->setValue('daerah', $fileSrtAset->daerah ?? '');
+                    $templateDocument->setValue('nosurataset', $fileSrtAset->nomor_surat ?? '');
+                    $templateDocument->setValue('tglsurataset', $fileSrtAset ? Date::tglMasehi($fileSrtAset->tgl_surat) : '');
 
-                    $templateDocument->setValue('nmlembagapw', $fileRekomPW->nm_lembaga ?? '');
-                    $templateDocument->setValue('pw', $fileRekomPW->daerah ?? '');
-                    $templateDocument->setValue('nosrtpw', $fileRekomPW->nomor_surat ?? '');
-                    $templateDocument->setValue('tglsrtpw', $fileRekomPW ? Date::tglMasehi($fileRekomPW->tgl_surat) : '');
+                    // $templateDocument->setValue('nmlembagapc', $fileRekomPC->nm_lembaga ?? '');
+                    // $templateDocument->setValue('pc', $fileRekomPC->daerah ?? '');
+                    // $templateDocument->setValue('nosrtpc', $fileRekomPC->nomor_surat ?? '');
+                    // $templateDocument->setValue('tglsrtpc', $fileRekomPC ? Date::tglMasehi($fileRekomPC->tgl_surat) : '');
+
+                    // $templateDocument->setValue('nmlembagapw', $fileRekomPW->nm_lembaga ?? '');
+                    // $templateDocument->setValue('pw', $fileRekomPW->daerah ?? '');
+                    // $templateDocument->setValue('nosrtpw', $fileRekomPW->nomor_surat ?? '');
+                    // $templateDocument->setValue('tglsrtpw', $fileRekomPW ? Date::tglMasehi($fileRekomPW->tgl_surat) : '');
 
                     $templateDocument->setValue('namasatpen', $satpenProfile->nm_satpen);
                     $templateDocument->setValue('alamat', $satpenProfile->alamat);
