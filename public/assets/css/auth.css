@@ -111,6 +111,13 @@ a{text-decoration:none;}
 .sip-shell-center{align-items:center; justify-content:center;}
 .sip-success-icon{width:64px; height:64px; border-radius:50%; background:var(--sip-primary-tint); display:inline-flex; align-items:center; justify-content:center; margin-bottom:20px;}
 .sip-reg-number{font-family:'IBM Plex Mono',monospace; font-size:24px; font-weight:700; color:var(--sip-primary); letter-spacing:0.04em; padding:12px 24px; background:var(--sip-primary-tint); border-radius:12px; display:inline-block; margin-bottom:20px;}
+/* success page: centre everything inside the card.
+   text-align:center alone is enough because the icon (.sip-success-icon = inline-flex),
+   the registration number (.sip-reg-number = inline-block) and the button (.sip-btn =
+   inline) are all inline-level elements, so they centre without needing margin:auto.
+   Scoped behind the .sip-card-success modifier because .sip-card h1 is shared with the
+   other auth pages (login, ceknpsn, etc.) which must stay left-aligned. */
+.sip-card-success{text-align:center;}
 
 /* steapform */
 .sip-register-header{padding:40px 0 20px; text-align:center;}

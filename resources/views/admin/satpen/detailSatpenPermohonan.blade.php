@@ -438,6 +438,11 @@
         }
 
         function replaceMapFile(mapfile) {
+            // Matched first so 'surat aset' is not read as 'pengurus cabang'
+            // further down, since it also contains the substring 'pc'.
+            if (mapfile === "surat_aset") {
+                return "surat keterangan status aset";
+            }
             mapfile = mapfile.replace("_", " ");
             if (mapfile.includes("pc")) {
                 mapfile = "pengurus cabang";
@@ -447,24 +452,50 @@
             return mapfile;
         }
 
+        // Cabang & wilayah recommendation documents are temporarily disabled, so their
+        // boxes are placed in a separate collapse.
+        const MAPFILE_NONAKTIF = ['rekom_pc', 'rekom_pw'];
+
         function createTableFiles(res) {
             cardFiles = `<div class="col-sm-6 px-3">
                       <h5 class="mb-2 fs-4">File Pendukung</h5>`;
-            $.each(res.filereg, function(key, row) {
-                let routepdfViewer = "{{ route('viewerpdf', ['fileName' => ':param']) }}".replace(':param', row.filesurat);
-                cardFiles += `<div class="mb-3 px-3 py-2 card-box-detail">
-                        <h6 class="text-capitalize">${ replaceMapFile(row.mapfile) }</h6>
-                        <p class="mb-1">${row.nm_lembaga} ${row.daerah ?? ''}</p>
-                        <p>Nomor : ${row.nomor_surat}</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small>Tanggal ${row.tgl_surat}</small>
-                            <a href="${routepdfViewer}" target="_blank"><span class="badge fs-2 bg-primary">Lihat PDF</span></a>
-                        </div>
-                    </div>`;
+
+            const aktif = (res.filereg || []).filter(row => !MAPFILE_NONAKTIF.includes(row.mapfile));
+            const nonaktif = (res.filereg || []).filter(row => MAPFILE_NONAKTIF.includes(row.mapfile));
+
+            $.each(aktif, function(key, row) {
+                cardFiles += boxFile(row, 'bg-primary');
             });
+
+            if (nonaktif.length) {
+                cardFiles += `<button class="btn btn-sm btn-light-secondary text-secondary w-100 d-flex align-items-center mb-2"
+                            type="button" data-bs-toggle="collapse" data-bs-target="#collapse-modal-files"
+                            aria-expanded="false" aria-controls="collapse-modal-files">
+                        <i class="ti ti-chevron-down me-1"></i> Dokumen Nonaktif (${nonaktif.length})
+                    </button>
+                    <div class="collapse" id="collapse-modal-files">`;
+                $.each(nonaktif, function(key, row) {
+                    cardFiles += boxFile(row, 'bg-secondary', true);
+                });
+                cardFiles += `</div>`;
+            }
+
             cardFiles += `</div>`;
 
             return cardFiles;
+        }
+
+        function boxFile(row, badgeClass, muted) {
+            let routepdfViewer = "{{ route('viewerpdf', ['fileName' => ':param']) }}".replace(':param', row.filesurat);
+            return `<div class="mb-3 px-3 py-2 card-box-detail ${muted ? 'border-secondary opacity-75' : ''}">
+                    <h6 class="text-capitalize ${muted ? 'text-muted' : ''}">${ replaceMapFile(row.mapfile) }${ muted ? ' <span class="badge bg-light-secondary text-secondary ms-1">Nonaktif</span>' : '' }</h6>
+                    <p class="mb-1 ${muted ? 'text-muted' : ''}">${row.nm_lembaga} ${row.daerah ?? ''}</p>
+                    <p class="${muted ? 'text-muted' : ''}">Nomor : ${row.nomor_surat}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="${muted ? 'text-muted' : ''}">Tanggal ${row.tgl_surat}</small>
+                        <a href="${routepdfViewer}" target="_blank"><span class="badge fs-2 ${badgeClass}">Lihat PDF</span></a>
+                    </div>
+                </div>`;
         }
 
         function createTimeline(res) {

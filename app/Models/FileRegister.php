@@ -20,4 +20,18 @@ class FileRegister extends Model
         'tgl_surat',
         'filesurat',
     ];
+
+    /**
+     * Get a single file register entry by its document type.
+     *
+     * Replaces order-based access ($filereg[0], $filereg[1], ...) because row
+     * order is no longer stable now that the cabang/wilayah recommendations
+     * are disabled.
+     *
+     * @param  \Illuminate\Support\Collection|array  $filereg
+     */
+    public static function findByMapfile($filereg, string $mapfile): ?self
+    {
+        return collect($filereg)->firstWhere('mapfile', $mapfile);
+    }
 }
