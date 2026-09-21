@@ -414,9 +414,9 @@
                                     <label for="nm_srt_aset" class="form-label required">Pemberi Keterangan</label>
                                     <select class="form-select  @error('nm_srt_aset') is-invalid @enderror" id="nm_srt_aset" name="nm_srt_aset" required>
                                         <option value="PCNU" {{ old('nm_srt_aset') == 'PCNU' ? 'selected' : '' }}>PCNU</option>
-                                        <option value="PC Ma'arif NU" {{ old('nm_srt_aset') == "PC Ma'arif NU" ? 'selected' : '' }}>PC Ma'arif NU</option>
+                                        <option value="LP Ma'arif NU PCNU" {{ old('nm_srt_aset') == "LP Ma'arif NU PCNU" ? 'selected' : '' }}>LP Ma'arif NU PCNU</option>
                                         <option value="PWNU" {{ old('nm_srt_aset') == 'PWNU' ? 'selected' : '' }}>PWNU</option>
-                                        <option value="PW Ma'arif NU" {{ old('nm_srt_aset') == "PW Ma'arif NU" ? 'selected' : '' }}>PW Ma'arif NU</option>
+                                        <option value="LP Ma'arif NU PWNU" {{ old('nm_srt_aset') == "LP Ma'arif NU PWNU" ? 'selected' : '' }}>LP Ma'arif NU PWNU</option>
                                     </select>
                                     <div class="invalid-feedback">
                                         @error('nm_srt_aset') {{ $message }} @enderror
@@ -814,7 +814,7 @@
                     });
 
                     // The cabang list changed -> refresh the asset letter issuer options
-                    // when the selected issuer is PCNU / PC Ma'arif NU.
+                    // when the selected issuer is PCNU / LP Ma'arif NU PCNU.
                     fillSrtAsetRegionOptions();
 
                     $('.selectpicker').selectpicker('refresh');
@@ -829,9 +829,9 @@
 
         function fillSrtAsetRegionOptions() {
             const pemberi   = $("#nm_srt_aset").val();
-            // PWNU & PW Ma'arif NU -> issued by wilayah (province)
-            // PCNU & PC Ma'arif NU -> issued by cabang (district)
-            const dariWilayah = pemberi === 'PWNU' || pemberi === "PW Ma'arif NU";
+            // PWNU & LP Ma'arif NU PWNU -> issued by wilayah (province)
+            // PCNU & LP Ma'arif NU PCNU -> issued by cabang (district)
+            const dariWilayah = pemberi === 'PWNU' || pemberi === "LP Ma'arif NU PWNU";
             const $select     = $("#daerah_srt_aset");
             const terpilih    = $select.val();
             const pilihan     = dariWilayah ? DAFTAR_WILAYAH : DAFTAR_CABANG;
