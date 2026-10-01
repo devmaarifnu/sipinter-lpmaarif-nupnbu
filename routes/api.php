@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SyncController;
 use App\Http\Controllers\Admin\VirtualNPSNController;
+use App\Http\Controllers\Api\WatermarkWebhookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,4 +19,12 @@ use App\Http\Controllers\Admin\VirtualNPSNController;
 Route::middleware('authverifytoken')->group(function() {
     Route::post('sync', [SyncController::class, 'bypassExistingData'])->name('sync.data');
     Route::get('clean-vnpsn', [VirtualNPSNController::class, 'checkAndRemoveUnusedVNPSN'])->name('vnpsn.clean');
+});
+
+/**
+ * Webhook WM Service, memakai bearer token pada tabel access_token
+ * (name = wm-service) seperti endpoint sync lainnya.
+ */
+Route::middleware('authverifytoken')->group(function () {
+    Route::post('webhook/wm/akta', [WatermarkWebhookController::class, 'handleAkta'])->name('webhook.wm.akta');
 });

@@ -124,4 +124,17 @@ class BHPNUController extends Controller
     public function forbiddenPage() {
         return view('bhpnu.forbidden');
     }
+
+    /**
+     * Tampilkan akta hasil watermark untuk operator. File dibuka lewat route ini
+     * (bukan URL storage langsung) supaya akses otomatis hilang ketika admin
+     * menarik dokumen, dan supaya operator hanya bisa membuka permohonannya sendiri.
+     */
+    public function viewAktaBHPNU(BHPNU $bhpnu) {
+        if ($bhpnu->id_user !== auth()->user()->id_user) {
+            return response("Invalid Document!");
+        }
+
+        return app(FileViewerController::class)->viewAktaBhpnu($bhpnu->id_bhpnu);
+    }
 }
