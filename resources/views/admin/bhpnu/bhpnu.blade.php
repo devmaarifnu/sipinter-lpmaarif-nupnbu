@@ -53,10 +53,10 @@
                                             <th>Nama Satpen</th>
                                             <th>Provinsi</th>
                                             <th>Kabupaten</th>
-                                            <th>Bukti Pembayaran</th>
-                                            <th>Tanggal</th>
+                                            <th class="text-center">Bukti Pembayaran</th>
+                                            <th>Tanggal Pengajuan</th>
                                             @if (!in_array(auth()->user()->role, ['admin wilayah', 'admin cabang']))
-                                                <th>Aksi</th>
+                                                <th class="text-center">Aksi</th>
                                             @endif
                                         </tr>
                                     </thead>
@@ -74,11 +74,15 @@
                                                 <td>{{ $row->satpen->nm_satpen }}</td>
                                                 <td>{{ $row->satpen->provinsi->nm_prov }}</td>
                                                 <td>{{ $row->satpen->kabupaten->nama_kab }}</td>
-                                                <td>
-                                                    <a href="{{ route('a.bhpnu.file', $row->bukti_bayar) }}"
-                                                        class="btn btn-sm btn-modern btn-secondary">
-                                                        <i class="ti ti-file-text me-1"></i>Lihat Berkas
-                                                    </a>
+                                                <td class="text-center">
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-modern btn-secondary"
+                                                        data-bs-toggle="modal" data-bs-target="#modalBuktiBayar"
+                                                        data-bukti-url="{{ route('a.bhpnu.file', $row->bukti_bayar) }}"
+                                                        data-bukti-subtitle="{{ $row->satpen->no_registrasi }} - {{ $row->satpen->nm_satpen }}"
+                                                        title="Lihat Bukti Pembayaran">
+                                                        <i class="ti ti-file-text me-1"></i>Lihat
+                                                    </button>
                                                 </td>
                                                 <td>{{ Date::tglMasehi($row->tanggal) }}</td>
                                                 @if (!in_array(auth()->user()->role, ['admin wilayah', 'admin cabang']))
@@ -119,10 +123,10 @@
                                             <th>Nama Satpen</th>
                                             <th>Provinsi</th>
                                             <th>Kabupaten</th>
-                                            <th>Bukti Pembayaran</th>
+                                            <th class="text-center">Bukti Pembayaran</th>
                                             <th>Tanggal</th>
                                             @if (!in_array(auth()->user()->role, ['admin wilayah', 'admin cabang']))
-                                                <th>Aksi</th>
+                                                <th class="text-center">Aksi</th>
                                             @endif
                                         </tr>
                                     </thead>
@@ -139,11 +143,15 @@
                                                 <td>{{ $row->satpen->nm_satpen }}</td>
                                                 <td>{{ $row->satpen->provinsi->nm_prov }}</td>
                                                 <td>{{ $row->satpen->kabupaten->nama_kab }}</td>
-                                                <td>
-                                                    <a href="{{ route('a.bhpnu.file', $row->bukti_bayar) }}"
-                                                        class="btn btn-sm btn-modern btn-secondary">
-                                                        <i class="ti ti-file-text me-1"></i>Lihat Berkas
-                                                    </a>
+                                                <td class="text-center">
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-modern btn-secondary"
+                                                        data-bs-toggle="modal" data-bs-target="#modalBuktiBayar"
+                                                        data-bukti-url="{{ route('a.bhpnu.file', $row->bukti_bayar) }}"
+                                                        data-bukti-subtitle="{{ $row->satpen->no_registrasi }} - {{ $row->satpen->nm_satpen }}"
+                                                        title="Lihat Bukti Pembayaran">
+                                                        <i class="ti ti-file-text me-1"></i>Lihat
+                                                    </button>
                                                 </td>
                                                 <td>{{ Date::tglMasehi($row->tanggal) }}</td>
                                                 @if (!in_array(auth()->user()->role, ['admin wilayah', 'admin cabang']))
@@ -180,18 +188,21 @@
                                             <th>Nama Satpen</th>
                                             <th>Provinsi</th>
                                             <th>Kabupaten</th>
-                                            <th>Bukti Pembayaran</th>
+                                            <th class="text-center">Bukti Pembayaran</th>
+                                            <th class="text-center">Akta</th>
                                             <th>Nomor Resi</th>
                                             <th>Permohonan</th>
                                             <th>Dikirim</th>
                                             <th>Expired Dokumen</th>
                                             @if (in_array(auth()->user()->role, ['super admin']))
-                                                <th>Aksi</th>
+                                                <th class="text-center">Aksi</th>
                                             @endif
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($bhpnuDikirim as $row)
+                                            @php($isAktaReady = $aktaReady[$row->id_bhpnu] ?? false)
+                                            @php($statusAkta = $aktaStatus[$row->id_bhpnu] ?? null)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>
@@ -203,11 +214,48 @@
                                                 <td>{{ $row->satpen->nm_satpen }}</td>
                                                 <td>{{ $row->satpen->provinsi->nm_prov }}</td>
                                                 <td>{{ $row->satpen->kabupaten->nama_kab }}</td>
-                                                <td>
-                                                    <a href="{{ route('a.bhpnu.file', $row->bukti_bayar) }}"
-                                                        class="btn btn-sm btn-modern btn-secondary">
-                                                        <i class="ti ti-file-text me-1"></i>Lihat Berkas
-                                                    </a>
+                                                <td class="text-center">
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-modern btn-secondary"
+                                                        data-bs-toggle="modal" data-bs-target="#modalBuktiBayar"
+                                                        data-bukti-url="{{ route('a.bhpnu.file', $row->bukti_bayar) }}"
+                                                        data-bukti-subtitle="{{ $row->satpen->no_registrasi }} - {{ $row->satpen->nm_satpen }}"
+                                                        title="Lihat Bukti Pembayaran">
+                                                        <i class="ti ti-file-text me-1"></i>Lihat
+                                                    </button>
+                                                </td>
+                                                <td class="text-center">
+                                                    @if ($isAktaReady)
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-modern btn-secondary"
+                                                            data-bs-toggle="modal" data-bs-target="#modalAkta"
+                                                            data-bs="{{ $row->id_bhpnu }}"
+                                                            data-akta-view="{{ route('a.bhpnu.akta', $row->id_bhpnu) }}"
+                                                            data-akta-download="{{ route('a.bhpnu.akta.download', $row->id_bhpnu) }}"
+                                                            data-akta-subtitle="{{ $row->satpen->no_registrasi }} - {{ $row->satpen->nm_satpen }}"
+                                                            title="Lihat Akta">
+                                                            <i class="ti ti-file-text me-1"></i>Lihat
+                                                        </button>
+                                                    @elseif ($statusAkta == 'failed')
+                                                        <span class="badge bg-light-danger text-danger"
+                                                            @if ($row->akta_note) title="{{ $row->akta_note }}" @endif>
+                                                            <i class="ti ti-alert-triangle me-1"></i>Failed
+                                                        </span>
+                                                    @elseif ($statusAkta == 'processing')
+                                                        <span class="badge bg-light-warning text-warning"
+                                                            @if ($row->akta_note) title="{{ $row->akta_note }}" @endif>
+                                                            <i class="ti ti-loader me-1"></i>File is Processing
+                                                        </span>
+                                                    @elseif ($statusAkta == 'missing')
+                                                        <span class="badge bg-light-danger text-danger"
+                                                            title="Permintaan sudah dikirim ke WM Service tetapi file hasil watermark belum ada di storage. Gunakan tombol proses ulang pada kolom Aksi.">
+                                                            <i class="ti ti-file-off me-1"></i>File Tidak Ditemukan
+                                                        </span>
+                                                    @else
+                                                        <span class="badge bg-light-secondary text-secondary">
+                                                            Belum diproses
+                                                        </span>
+                                                    @endif
                                                 </td>
                                                 <td>{{ $row->no_resi }}</td>
                                                 <td>{{ Date::tglMasehi($row->tanggal) }}</td>
@@ -215,15 +263,44 @@
                                                 <td>{{ Date::tglMasehi($row->tgl_expired) }}</td>
                                                 @if (in_array(auth()->user()->role, ['super admin']))
                                                     <td>
-                                                        <form action="{{ route('a.bhpnu.destroy', $row->id_bhpnu) }}"
-                                                            method="post" class="deleteBtn">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                class="btn btn-sm btn-modern btn-danger" title="Hapus">
-                                                                <i class="ti ti-trash"></i>
-                                                            </button>
-                                                        </form>
+                                                        <div class="d-flex align-items-center gap-1">
+                                                            @if ($isAktaReady)
+                                                                <a href="{{ route('a.bhpnu.akta.download', $row->id_bhpnu) }}"
+                                                                    class="btn btn-sm btn-modern btn-primary"
+                                                                    title="Download Akta">
+                                                                    <i class="ti ti-download"></i>
+                                                                </a>
+                                                                <form action="{{ route('a.bhpnu.akta.retract', $row->id_bhpnu) }}"
+                                                                    method="post" class="deleteBtn">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit"
+                                                                        class="btn btn-sm btn-modern btn-warning"
+                                                                        title="Tarik Dokumen dari Operator (tombol view hilang &amp; akses operator dicabut)">
+                                                                        <i class="ti ti-arrow-bar-to-up"></i>
+                                                                    </button>
+                                                                </form>
+                                                            @else
+                                                                <form action="{{ route('a.bhpnu.akta.reprocess', $row->id_bhpnu) }}"
+                                                                    method="post">
+                                                                    @csrf
+                                                                    <button type="submit"
+                                                                        class="btn btn-sm btn-modern btn-primary"
+                                                                        title="Proses ulang akta ke WM Service">
+                                                                        <i class="ti ti-refresh"></i>
+                                                                    </button>
+                                                                </form>
+                                                            @endif
+                                                            <form action="{{ route('a.bhpnu.destroy', $row->id_bhpnu) }}"
+                                                                method="post" class="deleteBtn">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit"
+                                                                    class="btn btn-sm btn-modern btn-danger" title="Hapus">
+                                                                    <i class="ti ti-trash"></i>
+                                                                </button>
+                                                            </form>
+                                                        </div>
                                                     </td>
                                                 @endif
                                             </tr>

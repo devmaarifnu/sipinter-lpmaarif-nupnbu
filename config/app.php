@@ -21,6 +21,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Watermark (WM) Service
+    |--------------------------------------------------------------------------
+    |
+    | Service untuk membubuhkan watermark pada dokumen akta BHPNU.
+    | 'url' diisi alamat host + port service, contoh http://192.168.1.10:9000
+    */
+
+    'wm_service' => env('WM_SERVICE_URL', ''),
+    'wm_service_timeout' => env('WM_SERVICE_TIMEOUT', 30),
+
+    /*
+    | Berapa menit permintaan watermark dianggap masih diproses. Setelah lewat
+    | batas ini dan file tetap tidak ada, kolom Akta menampilkan
+    | "File Tidak Ditemukan" supaya admin tahu perlu proses ulang.
+    */
+    'wm_processing_window' => env('WM_PROCESSING_WINDOW_MINUTES', 60),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

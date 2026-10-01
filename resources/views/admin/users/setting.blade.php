@@ -103,6 +103,21 @@
                         </tr>
 
                         <tr>
+                            <th width="150">{{ $settings[8]["describe"] }}</th>
+                            <td width="10">:</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <input type="file" name="{{ $settings[8]["lookup"] }}"
+                                           class="form-control form-control-sm w-25">
+                                    <label class="mx-2">{{ $settings[8]["value"] }}</label>
+                                </div>
+                                <small class="text-muted">
+                                    Template akta yang dikirim ke WM Service. Hasil watermark otomatis tersimpan di storage aplikasi ini.
+                                </small>
+                            </td>
+                        </tr>
+
+                        <tr>
                             <td colspan="2"></td>
                             <td>
                                 <button type="submit" class="btn btn-sm btn-primary">
