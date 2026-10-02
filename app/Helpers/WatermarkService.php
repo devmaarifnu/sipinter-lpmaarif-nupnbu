@@ -48,7 +48,7 @@ class WatermarkService
          * Endpoint diambil utuh dari config (termasuk path), jadi path tidak
          * lagi disusun di dalam kode.
          */
-        $endpoint = (string) config('app.wm_akta_endpoint');
+        $endpoint = (string) config('app.wm_service_url');
         if ($endpoint === '') {
             $note = 'URL Watermark Service belum dikonfigurasi (WM_SERVICE_URL)';
 
