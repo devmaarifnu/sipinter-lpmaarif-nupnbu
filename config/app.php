@@ -25,10 +25,13 @@ return [
     |--------------------------------------------------------------------------
     |
     | Service untuk membubuhkan watermark pada dokumen akta BHPNU.
-    | 'url' diisi alamat host + port service, contoh http://192.168.1.10:9000
+    |
+    | wm_akta_endpoint diisi URL LENGKAP termasuk path-nya, karena aplikasi
+    | tidak lagi menyusun path sendiri. Contoh isi WM_SERVICE_URL:
+    |   http://192.168.1.10:9000/wm/akta
     */
 
-    'wm_service' => env('WM_SERVICE_URL', ''),
+    'wm_akta_endpoint' => env('WM_SERVICE_URL', ''),
     'wm_service_timeout' => env('WM_SERVICE_TIMEOUT', 30),
 
     /*
