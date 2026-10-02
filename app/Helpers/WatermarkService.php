@@ -44,9 +44,12 @@ class WatermarkService
          * Tanpa ini kolom Akta tetap kosong sehingga halaman BHPNU menampilkan
          * "Belum diproses" padahal approve sudah ditekan - dan admin tidak
          * punya petunjuk apa pun tentang penyebabnya.
+         *
+         * Endpoint diambil utuh dari config (termasuk path), jadi path tidak
+         * lagi disusun di dalam kode.
          */
-        $serviceUrl = rtrim((string) config('app.wm_service'), '/');
-        if ($serviceUrl === '') {
+        $endpoint = (string) config('app.wm_service_url');
+        if ($endpoint === '') {
             $note = 'URL Watermark Service belum dikonfigurasi (WM_SERVICE_URL)';
 
             self::recordFailure($bhpnu, $note);
@@ -83,17 +86,16 @@ class WatermarkService
             ],
         ];
 
-        $endpoint = $serviceUrl . '/wm/akta';
-
         /**
-         * Payload dicatat sebelum request dikirim supaya isi body tetap ada di
-         * log meskipun koneksi gagal (mis. masalah SSL/DNS/timeout) dan kita
-         * tidak pernah menerima respons apa pun dari WM Service.
+         * Body request dicatat apa adanya (bukan sebagai context array) supaya
+         * isi log sama persis dengan JSON yang dikirim ke WM Service. Kalau
+         * dibungkus array, log menampilkan {"bhpnu_id":..,"payload":{..}} yang
+         * menyesatkan seolah request-nya ikut terbungkus.
+         *
+         * Dicatat sebelum request dikirim agar isinya tetap ada walau koneksi
+         * gagal (SSL/DNS/timeout) dan tidak ada respons sama sekali.
          */
-        Log::info('[WATERMARK][requestAkta] POST ' . $endpoint, [
-            'bhpnu_id' => $bhpnu->id_bhpnu,
-            'payload' => $payload,
-        ]);
+        Log::info('[WATERMARK][requestAkta] POST ' . $endpoint . ' body: ' . json_encode($payload, JSON_UNESCAPED_SLASHES));
 
         try {
             $response = Http::timeout((int) config('app.wm_service_timeout'))
