@@ -43,6 +43,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Bukti Pembayaran</th>
+                                        <th>Akta</th>
                                         <th>Resi Pengiriman</th>
                                         <th>Permohonan</th>
                                         <th>Disetujui</th>
@@ -55,7 +56,30 @@
                                         <tr>
                                             <td>{{ ++$no }}</td>
                                             <td>
-                                                <a href="{{ route('bhpnu.file', $row->bukti_bayar) }}" class="btn btn-sm btn-secondary">Lihat Berkas</a>
+                                                <button type="button" class="btn btn-sm btn-secondary"
+                                                        data-bs-toggle="modal" data-bs-target="#modalBuktiBayar"
+                                                        data-bukti-url="{{ route('bhpnu.file', $row->bukti_bayar) }}"
+                                                        data-bukti-subtitle="{{ $row->satpen->no_registrasi ?? '' }} - {{ $row->satpen->nm_satpen ?? '' }}">
+                                                    <i class="ti ti-file-text me-1"></i>Lihat Berkas
+                                                </button>
+                                            </td>
+                                            <td>
+                                                @php($statusAkta = \App\Helpers\WatermarkService::aktaDisplayStatus($row))
+                                                @if($statusAkta == 'success')
+                                                    <button type="button" class="btn btn-sm btn-primary"
+                                                            data-bs-toggle="modal" data-bs-target="#modalAkta"
+                                                            data-bs="{{ $row->id_bhpnu }}"
+                                                            data-akta-view="{{ route('bhpnu.akta', $row->id_bhpnu) }}"
+                                                            data-akta-subtitle="{{ $row->satpen->no_registrasi ?? '' }} - {{ $row->satpen->nm_satpen ?? '' }}">
+                                                        <i class="ti ti-file-text me-1"></i>Lihat Akta
+                                                    </button>
+                                                @elseif($statusAkta == 'failed')
+                                                    <span class="badge bg-light-danger text-danger">Gagal diproses</span>
+                                                @elseif($statusAkta == 'missing')
+                                                    <span class="badge bg-light-danger text-danger">Dokumen belum tersedia</span>
+                                                @else
+                                                    <span class="badge bg-light-warning text-warning">File is Processing</span>
+                                                @endif
                                             </td>
                                             <td>{{ $row->no_resi }}</td>
                                             <td>{{ Date::tglMasehi($row->tanggal) }}</td>
@@ -92,3 +116,5 @@
         });
     </script>
 @endsection
+
+@include('bhpnu.aktaModal')

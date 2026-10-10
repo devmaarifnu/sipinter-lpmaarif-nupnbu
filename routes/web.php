@@ -148,6 +148,11 @@ Route::middleware('mustlogin')->group(function () {
             Route::put('/{bhpnu}', [BHPNUController::class, 'storePermohonanBHPNU'])->name('bhpnu.save');
             Route::get('/history', [BHPNUController::class, 'historyPermohonan'])->name('bhpnu.history');
             Route::get('/file/{fileName?}', [FileViewerController::class, 'viewBuktiPembayaran'])->name('bhpnu.file');
+            /**
+             * Akta hanya bisa dibuka operator bila dokumen masih ada (belum ditarik admin).
+             * Akses ditentukan oleh id_bhpnu milik operator yang sedang login.
+             */
+            Route::get('/akta/{bhpnu}', [BHPNUController::class, 'viewAktaBHPNU'])->name('bhpnu.akta');
         });
         Route::group(["prefix" => "bantuan"], function () {
             Route::get('/', [SatpenController::class, 'underConstruction'])->name('bantuan');
@@ -266,6 +271,13 @@ Route::middleware('mustlogin')->group(function () {
                 Route::put('/reject/{bhpnu}', [BHPNUControllerAdmin::class, 'setRejectBHPNU'])->name('a.bhpnu.reject');
                 Route::delete('/destroy/{bhpnu}', [BHPNUControllerAdmin::class, 'destroyBHPNU'])->name('a.bhpnu.destroy')->middleware('superadmin');
                 Route::get('/file/{fileName?}', [FileViewerController::class, 'viewBuktiPembayaran'])->name('a.bhpnu.file')->withoutMiddleware('primaryadmin');
+                /**
+                 * Dokumen akta hasil watermark WM Service
+                 */
+                Route::get('/akta/{bhpnu}', [FileViewerController::class, 'viewAktaBhpnu'])->name('a.bhpnu.akta');
+                Route::get('/akta/{bhpnu}/download', [FileViewerController::class, 'downloadAktaBhpnu'])->name('a.bhpnu.akta.download');
+                Route::post('/akta/{bhpnu}/reprocess', [BHPNUControllerAdmin::class, 'reprocessAktaBHPNU'])->name('a.bhpnu.akta.reprocess');
+                Route::delete('/akta/{bhpnu}/retract', [BHPNUControllerAdmin::class, 'retractAktaBHPNU'])->name('a.bhpnu.akta.retract');
             });
             
             /**

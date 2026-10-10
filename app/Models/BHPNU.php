@@ -14,11 +14,20 @@ class BHPNU extends Model
     protected $fillable = [
         'id_user',
         'bukti_bayar',
+        'akta_file',
+        'akta_status',
+        'akta_note',
+        'akta_requested_at',
+        'akta_processed_at',
         'no_resi',
         'tanggal',
         'tgl_dikirim',
         'tgl_expired',
         'status',
+    ];
+    protected $casts = [
+        'akta_processed_at' => 'datetime',
+        'akta_requested_at' => 'datetime',
     ];
     public function satpen()
     {

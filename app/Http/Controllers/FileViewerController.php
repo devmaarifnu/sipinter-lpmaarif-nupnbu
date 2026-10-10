@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BHPNU;
 
 class FileViewerController extends Controller
 {
@@ -24,6 +25,36 @@ class FileViewerController extends Controller
             return response()->file($filepath);
         }
         return response("Invalid Document!");
+    }
+
+    /**
+     * Tampilkan hasil watermark akta BHPNU. Parameter berupa id_bhpnu (bukan nama
+     * file) supaya admin tidak bisa menebak dokumen permohonan lain lewat URL.
+     */
+    public function viewAktaBhpnu(int $bhpnuId) {
+        return $this->serveAktaBhpnu($bhpnuId, false);
+    }
+
+    public function downloadAktaBhpnu(int $bhpnuId) {
+        return $this->serveAktaBhpnu($bhpnuId, true);
+    }
+
+    private function serveAktaBhpnu(int $bhpnuId, bool $download) {
+        $bhpnu = BHPNU::find($bhpnuId);
+
+        if (!$bhpnu || !$bhpnu->akta_file) {
+            return response("File is Processing");
+        }
+
+        $filepath = storage_path("app/bhpnu-doc/akta/". $bhpnu->akta_file);
+
+        if (!file_exists($filepath)) {
+            return response("File is Processing");
+        }
+
+        return $download
+            ? response()->download($filepath)
+            : response()->file($filepath);
     }
 
     public function viewNpwpLama(string $fileName) {

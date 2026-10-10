@@ -34,13 +34,19 @@ class Settings extends Controller
 
         $request->validate([
             'template_piagam' => 'file|mimes:docx|max:2024',
-            'template_sk' => 'file|mimes:docx|max:2024'
+            'template_sk' => 'file|mimes:docx|max:2024',
+            'akta_template' => 'file|mimes:docx,pdf|max:5120'
         ]);
 
         foreach (Setting::pluck('value', 'lookup')->all() as $key => $setting) {
             if ($request->hasFile($key)) {
                 $file = $request->file($key);
                 $filename = str_replace("#", "", $file->getClientOriginalName());
+                /**
+                 * File akta disimpan pada direktori yang sama dengan template
+                 * piagam/sk, yaitu storage/app/templates, agar bisa dibaca
+                 * langsung oleh WM Service.
+                 */
                 $fileStorage = storage_path('app/templates/' . $setting);
                 if (file_exists($fileStorage)) {
                     unlink($fileStorage);
