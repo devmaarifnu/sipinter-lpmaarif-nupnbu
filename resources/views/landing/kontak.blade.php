@@ -197,7 +197,7 @@
                             <div class="sip-kontak-icon"><i class="ti ti-brand-whatsapp"></i></div>
                             <div>
                                 <div class="sip-label">WhatsApp</div>
-                                <div class="sip-value">+62 858-8385-8897</div>
+                                <div class="sip-value">+62 878-9422-1840</div>
                             </div>
                         </div>
                     </div>
@@ -219,7 +219,7 @@
                 </div>
                 <div>
                     <h4>Kontak</h4>
-                    <ul><li>021-3904115</li><li>bhp.maarifnu@gmail.com</li><li>+62 858-8385-8897 (WA)</li><li>+62 813-1986-8302 (WA)</li></ul>
+                    <ul><li>021-3904115</li><li>bhp.maarifnu@gmail.com</li><li>+62 878-9422-1840 (WA)</li><li>+62 813-1986-8302 (WA)</li></ul>
                 </div>
                 <div>
                     <h4>Tautan</h4>

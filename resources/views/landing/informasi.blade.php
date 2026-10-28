@@ -210,7 +210,7 @@
                 </div>
                 <div>
                     <h4>Kontak</h4>
-                    <ul><li>021-3904115</li><li>bhp.maarifnu@gmail.com</li><li>+62 858-8385-8897 (WA)</li><li>+62 813-1986-8302 (WA)</li></ul>
+                    <ul><li>021-3904115</li><li>bhp.maarifnu@gmail.com</li><li>+62 878-9422-1840 (WA)</li><li>+62 813-1986-8302 (WA)</li></ul>
                 </div>
                 <div>
                     <h4>Tautan</h4>
