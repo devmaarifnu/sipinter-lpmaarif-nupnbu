@@ -22,9 +22,9 @@
                             <p>Email</p>
                             <p>bhp.maarifnu@gmail.com</p>
                             <p>WA</p>
-                            <p><a href="https://wa.me/6285883858897" class="text-white"><i
+                            <p><a href="https://wa.me/6287894221840" class="text-white"><i
                                         class="ti ti-brand-whatsapp"></i>   
-                                    +6285883858897</a></p>
+                                    +6287894221840</a></p>
                             <p><a href="https://wa.me/6281319868302" class="text-white"><i
                                         class="ti ti-brand-whatsapp"></i>   
                                     +6281319868302</a></p>
