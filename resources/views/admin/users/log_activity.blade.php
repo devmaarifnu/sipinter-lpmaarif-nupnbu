@@ -63,8 +63,8 @@
                                         @foreach ($logs as $log)
                                             <tr>
                                                 <td>{{ $log->created_at }}</td>
-                                                <td>{{ $log?->satpen?->nm_satpen ?? $log->user->name }}</td>
-                                                <td>{{ strtoupper($log->user->role) }}</td>
+                                                <td>{{ $log?->satpen?->nm_satpen ?? $log?->user?->name ?? '-' }}</td>
+                                                <td>{{ strtoupper($log?->user?->role ?? '-') }}</td>
                                                 <td>
                                                     @if ($log->action == 'create')
                                                         <span class="badge bg-success">{{ $log->action }}</span>

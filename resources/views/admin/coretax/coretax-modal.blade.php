@@ -131,7 +131,11 @@
                             <div class="table-responsive">
                                 <table class="table">
                                     <tbody>`;
-                                    
+
+                    // URL berkas NPWP lama; placeholder di-replace agar tidak bergantung
+                    // pada parameter route yang wajib terisi saat render.
+                    const routeFileNpwpLama = "{{ route('a.coretax.file', ['fileName' => ':param']) }}".replace(':param', ctx?.npwp_lama ?? '');
+
                                     if (ctx?.satpen) {
                                         modalDetail += `<tr>
                                             <td width="230"><strong>Nama Sekolah/Madrasah</strong></td>
@@ -265,7 +269,7 @@
                                     <tr>
                                         <td><strong>NPWP Lama</strong></td>
                                         <td>:</td>
-                                        <td><a href="{{ route('a.coretax.file', '') }}/${ctx.npwp_lama}" class="btn btn-sm btn-secondary">Lihat Berkas</a></td>
+                                        <td><a href="${routeFileNpwpLama}" class="btn btn-sm btn-secondary">Lihat Berkas</a></td>
                                     </tr>
                                     <tr>
                                         <td><strong>Nama PIC</strong></td>
@@ -360,10 +364,14 @@
                     let actionButtons = '';
                     
                     @if (!in_array(auth()->user()->role, ['admin wilayah', 'admin cabang']))
+                        // URL dibangun dengan placeholder lalu di-replace di sisi JS.
+                        const routeAcc = "{{ route('a.coretax.acc', ['coretax' => ':param']) }}".replace(':param', ctx?.id ?? '');
+                        const routeBukaExpiry = "{{ route('a.coretax.open-expiry', ['coretax' => ':param']) }}".replace(':param', ctx?.id ?? '');
+
                         // Determine buttons based on status
                         if (ctx?.status === 'verifikasi') {
                             actionButtons = `
-                                <a href="{{ route('a.coretax.acc', '') }}/${ctx.id}" class="btn btn-success ms-2">
+                                <a href="${routeAcc}" class="btn btn-success ms-2">
                                     <i class="ti ti-checks"></i> Terima
                                 </a>
                                 <button class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#modalTolak" data-bs="${ctx.id}" data-bs-dismiss="modal">
@@ -372,13 +380,13 @@
                             `;
                         } else if (ctx?.status === 'buka_expiry') {
                             actionButtons = `
-                                <a href="{{ route('a.coretax.open-expiry', '') }}/${ctx.id}" class="btn btn-success ms-2">
+                                <a href="${routeBukaExpiry}" class="btn btn-success ms-2">
                                     <i class="ti ti-checks"></i> Buka Expiry
                                 </a>
                             `;
                         } else if (ctx?.status === 'perbaikan') {
                             actionButtons = `
-                                <a href="{{ route('a.coretax.acc', '') }}/${ctx.id}" class="btn btn-success ms-2">
+                                <a href="${routeAcc}" class="btn btn-success ms-2">
                                     <i class="ti ti-checks"></i> Terima
                                 </a>
                                 <button class="btn btn-danger ms-2" data-bs-toggle="modal" data-bs-target="#modalTolak" data-bs="${ctx.id}" data-bs-dismiss="modal">

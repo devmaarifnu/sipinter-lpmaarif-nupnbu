@@ -34,10 +34,10 @@
                         </div>
                         <div>
                             @if($satpenProfile->status == "revisi")
-                            <a href="{{ route('mysatpen.revisi') }}" class="btn btn-sm btn-info"><i class="ti ti-edit"></i>
+                            <a href="{{ route('mysatpen.edit') }}" class="btn btn-sm btn-info"><i class="ti ti-edit"></i>
                                 Revisi</a>
                             @elseif($satpenProfile->status == "expired")
-                            <a href="{{ route('mysatpen.perpanjang') }}" class="btn btn-sm btn-info"><i class="ti ti-edit"></i>
+                            <a href="{{ route('mysatpen.perpanjang.page') }}" class="btn btn-sm btn-info"><i class="ti ti-edit"></i>
                                 Perpanjangan</a>
                             @endif
                         </div>

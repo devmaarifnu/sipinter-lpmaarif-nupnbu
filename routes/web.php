@@ -89,11 +89,11 @@ Route::middleware('mustlogin')->group(function () {
          */
         Route::group(["prefix" => "satpen"], function () {
             Route::get('/', [SatpenController::class, 'mySatpenPage'])->name('mysatpen');
-            Route::get('/edit', [SatpenController::class, 'editSatpenPage'])->name('mysatpen.revisi');
-            Route::get('/perpanjang', [SatpenController::class, 'perpanjangSatpenPage'])->name('mysatpen.perpanjang');
+            Route::get('/edit', [SatpenController::class, 'editSatpenPage'])->name('mysatpen.edit');
+            Route::get('/perpanjang', [SatpenController::class, 'perpanjangSatpenPage'])->name('mysatpen.perpanjang.page');
             Route::put('/edit', [SatpenController::class, 'revisionProses'])->name('mysatpen.revisi');
             Route::put('/change/npsn/{satpen}', [SatpenController::class, 'changeNPSN'])->name('mysatpen.npsn');
-            Route::put('/perpanjang', [SatpenController::class, 'revisionProses'])->name('mysatpen.perpanjang');
+            Route::put('/perpanjang', [SatpenController::class, 'revisionProses'])->name('mysatpen.perpanjang.submit');
             Route::get('/download/{document}', [SatpenController::class, 'downloadDocument'])->name('download');
 
             Route::get('/pdptk', [SatpenController::class, 'indexPDPTK'])->name('pdptk');
@@ -178,7 +178,7 @@ Route::middleware('mustlogin')->group(function () {
          * Dashboard
          */
         Route::get('/', [SATPENControllerAdmin::class, 'dashboardPage'])->name('a.dash');
-        Route::get('/dashboard', [SATPENControllerAdmin::class, 'dashboardPage'])->name('a.dash');
+        Route::get('/dashboard', [SATPENControllerAdmin::class, 'dashboardPage'])->name('admin.dashboard');
         Route::prefix('org')->group(function () {
             Route::get('/profile', [ProfileORGController::class, 'index'])->name('profile');
             Route::post('/profile', [ProfileORGController::class, 'storeOrUpdate'])->name('profile.save');
@@ -336,7 +336,7 @@ Route::middleware('mustlogin')->group(function () {
                 Route::get('/wilayah/data', [NpypController::class, 'getNpypWilayahData'])->name('a.npyp.wilayah.data');
                 Route::get('/rekap-ptk', [NpypController::class, 'rekapPtkNasional'])->name('a.npyp.rekap-ptk');
                 Route::get('/rekap-ptk/{id}/detail', [NpypController::class, 'getPtkDetail'])->name('a.npyp.ptk-detail');
-                Route::get('/file/{path?}/{fileName?}', [FileViewerController::class, 'viewSkPtk'])->name('ptk.file')->withoutMiddleware('primaryadmin');
+                Route::get('/file/{path?}/{fileName?}', [FileViewerController::class, 'viewSkPtk'])->name('admin.ptk.file')->withoutMiddleware('primaryadmin');
             });
 
             Route::group(["prefix" => "bantuan"], function () {

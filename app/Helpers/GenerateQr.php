@@ -3,13 +3,13 @@ namespace App\Helpers;
 
 use Endroid\QrCode\Color\Color;
 use Endroid\QrCode\Encoding\Encoding;
-use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
+use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\QrCode;
-use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
+use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\Logo\Logo;
 use Illuminate\Support\Str;
-use Mockery\Exception;
+use Throwable;
 
 class GenerateQr {
 
@@ -20,10 +20,10 @@ class GenerateQr {
             // Create QR code
             $qrCode = QrCode::create($content)
                 ->setEncoding(new Encoding('UTF-8'))
-                ->setErrorCorrectionLevel(new ErrorCorrectionLevelLow())
+                ->setErrorCorrectionLevel(ErrorCorrectionLevel::Low)
                 ->setSize(130)
                 ->setMargin(10)
-                ->setRoundBlockSizeMode(new RoundBlockSizeModeMargin())
+                ->setRoundBlockSizeMode(RoundBlockSizeMode::Margin)
                 ->setForegroundColor(new Color(0, 0, 0))
                 ->setBackgroundColor(new Color(255, 255, 255));
 
@@ -37,7 +37,8 @@ class GenerateQr {
             $result->saveToFile($imagePath);
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
+            logger()->error('[QR] Gagal membuat QR code: ' . $e->getMessage());
             return false;
         }
 

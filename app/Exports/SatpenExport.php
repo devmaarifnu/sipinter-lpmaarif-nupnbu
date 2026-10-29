@@ -9,10 +9,14 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Illuminate\Support\Enumerable;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class SatpenExport implements FromCollection, WithMapping, WithHeadings, WithColumnWidths, WithStyles
 {
+    protected $specificFilter;
+    protected $statuses;
+    protected $filter;
 
     public function __construct($specificFilter, $statuses, $filter) {
         $this->specificFilter = $specificFilter;
@@ -22,7 +26,7 @@ class SatpenExport implements FromCollection, WithMapping, WithHeadings, WithCol
     /**
     * @return \Illuminate\Support\Collection
     */
-    public function collection()
+    public function collection(): Enumerable
     {
         return Satpen::with([
             'kategori:id_kategori,nm_kategori',
@@ -99,7 +103,7 @@ class SatpenExport implements FromCollection, WithMapping, WithHeadings, WithCol
         ];
     }
 
-    public function styles(Worksheet $sheet)
+    public function styles(Worksheet $sheet): ?array
     {
         return [
             1 => [

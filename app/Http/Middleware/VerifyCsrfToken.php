@@ -2,9 +2,13 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 
-class VerifyCsrfToken extends Middleware
+/**
+ * @deprecated Laravel 13 mengganti VerifyCsrfToken dengan PreventRequestForgery.
+ *             Class ini dipertahankan sebagai alias agar referensi lama tetap valid.
+ */
+class VerifyCsrfToken extends PreventRequestForgery
 {
     /**
      * The URIs that should be excluded from CSRF verification.

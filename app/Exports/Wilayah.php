@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Illuminate\Support\Enumerable;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Wilayah implements FromCollection, WithMapping, WithHeadings, WithColumnWidths, WithStyles
@@ -16,7 +17,7 @@ class Wilayah implements FromCollection, WithMapping, WithHeadings, WithColumnWi
     /**
      * @return \Illuminate\Support\Collection
      */
-    public function collection()
+    public function collection(): Enumerable
     {
         return Provinsi::with("profile")
                 ->whereHas("profile", function ($query) {
@@ -84,7 +85,7 @@ class Wilayah implements FromCollection, WithMapping, WithHeadings, WithColumnWi
         ];
     }
 
-    public function styles(Worksheet $sheet)
+    public function styles(Worksheet $sheet): ?array
     {
         return [
             1 => [

@@ -9,10 +9,17 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Illuminate\Support\Enumerable;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Others implements FromCollection, WithMapping, WithHeadings, WithColumnWidths, WithStyles
 {
+    protected $specificFilter;
+    protected $lembaga;
+    protected $filter;
+    protected $keywordFilter;
+    protected $lingkungan_satpen;
+    protected $akreditasi;
 
     public function __construct($specificFilter, $lembaga, $filter, $keyword, $lingkungan_satpen, $akreditasi)
     {
@@ -26,7 +33,7 @@ class Others implements FromCollection, WithMapping, WithHeadings, WithColumnWid
     /**
      * @return \Illuminate\Support\Collection
      */
-    public function collection()
+    public function collection(): Enumerable
     {
         $filter = $this->filter;
         $keywordFilter = $this->keywordFilter;
@@ -117,7 +124,7 @@ class Others implements FromCollection, WithMapping, WithHeadings, WithColumnWid
         ];
     }
 
-    public function styles(Worksheet $sheet)
+    public function styles(Worksheet $sheet): ?array
     {
         return [
             1 => [
