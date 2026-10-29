@@ -70,7 +70,7 @@
                     021-3904115 &nbsp;&bull;&nbsp; Fax 021-31906679
                 </div>
                 <div class="sip-wa-row">
-                    <a class="sip-wa-pill" href="https://wa.me/6285883858897">WA 1 &middot; 0858-8385-8897</a>
+                    <a class="sip-wa-pill" href="https://wa.me/6287894221840">WA 1 &middot; 0878-9422-1840</a>
                     <a class="sip-wa-pill" href="https://wa.me/6281319868302">WA 2 &middot; 0813-1986-8302</a>
                 </div>
                 <div class="sip-address">Gedung PBNU II, Lt. 2, Jl. Taman Amir Hamzah No. 5, Pegangsaan, Menteng, Jakarta Pusat 10320</div>

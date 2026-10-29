@@ -8,10 +8,17 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Illuminate\Support\Enumerable;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class PDPTK implements FromCollection, WithMapping, WithHeadings, WithColumnWidths, WithStyles
 {
+    protected $specificFilter;
+    protected $lembaga;
+    protected $tapel;
+    protected $filter;
+    protected $keywordFilter;
+    protected $filled;
 
     public function __construct($specificFilter, $lembaga, $tapel, $filter, $keyword, $filled)
     {
@@ -25,7 +32,7 @@ class PDPTK implements FromCollection, WithMapping, WithHeadings, WithColumnWidt
     /**
      * @return \Illuminate\Support\Collection
      */
-    public function collection()
+    public function collection(): Enumerable
     {
         $filter = $this->filter;
         $keywordFilter = $this->keywordFilter;
@@ -114,7 +121,7 @@ class PDPTK implements FromCollection, WithMapping, WithHeadings, WithColumnWidt
         ];
     }
 
-    public function styles(Worksheet $sheet)
+    public function styles(Worksheet $sheet): ?array
     {
         return [
             1 => [

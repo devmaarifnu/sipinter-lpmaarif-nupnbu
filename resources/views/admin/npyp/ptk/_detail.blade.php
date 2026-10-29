@@ -135,7 +135,7 @@
                         @if($ptk->upload_sk)
                         <tr>
                             <td class="fw-bold">Dokumen SK Penugasan</td>
-                            <td>: <a href="{{ route('ptk.file', $ptk->upload_sk) }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                            <td>: <a href="{{ route('admin.ptk.file', $ptk->upload_sk) }}" target="_blank" class="btn btn-outline-primary btn-sm">
                                 <i class="ti ti-download me-1"></i>Lihat Dokumen
                             </a></td>
                         </tr>

@@ -227,7 +227,7 @@
                     <p style="font-size:13.5px; line-height:1.7; max-width:280px;">Sistem Administrasi Pendidikan Terpadu &mdash; Lembaga Pendidikan Ma'arif NU, Pengurus Besar Nahdlatul Ulama.</p>
                 </div>
                 <div><h4>Alamat</h4><ul><li>Gedung PBNU II, Lantai 2</li><li>Jl. Taman Amir Hamzah No. 5</li><li>Pegangsaan, Menteng, Jakarta Pusat 10320</li></ul></div>
-                <div><h4>Kontak</h4><ul><li>021-3904115</li><li>bhp.maarifnu@gmail.com</li><li>+62 858-8385-8897 (WA)</li><li>+62 813-1986-8302 (WA)</li></ul></div>
+                <div><h4>Kontak</h4><ul><li>021-3904115</li><li>bhp.maarifnu@gmail.com</li><li>+62 878-9422-1840 (WA)</li><li>+62 813-1986-8302 (WA)</li></ul></div>
                 <div><h4>Tautan</h4><ul><li><a href="{{ route('verify') }}">Verifikasi Dokumen</a></li><li><a href="{{ route('ceknpsn') }}">Cek NPSN</a></li><li><a href="#">Panduan Pendataan</a></li></ul></div>
             </div>
             <div class="sip-bottom">

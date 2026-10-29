@@ -20,6 +20,13 @@ class ProfileORGController extends Controller
         $data = Provinsi::with("profile")
             ->where('id_prov', auth()->user()->provId)
             ->first();
+
+        // Admin pusat tanpa provId tidak punya wilayah terkait; arahkan ke halaman profil.
+        if ($data === null) {
+            return redirect()->route('profile')
+                ->with('error', 'Akun ini tidak terhubung ke data wilayah.');
+        }
+
         return view('home.profile-organisasi', compact('data'));
     }
 

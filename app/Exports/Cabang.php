@@ -8,10 +8,13 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Illuminate\Support\Enumerable;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Cabang implements FromCollection, WithMapping, WithHeadings, WithColumnWidths, WithStyles
 {
+    protected $specificFilter;
+    protected $wilayah;
 
     public function __construct($specificFilter, $wilayah)
     {
@@ -22,7 +25,7 @@ class Cabang implements FromCollection, WithMapping, WithHeadings, WithColumnWid
     /**
      * @return \Illuminate\Support\Collection
      */
-    public function collection()
+    public function collection(): Enumerable
     {
         $specificFilter = request()->specificFilter;  
         if ($this->wilayah) {
@@ -109,7 +112,7 @@ class Cabang implements FromCollection, WithMapping, WithHeadings, WithColumnWid
         ];
     }
 
-    public function styles(Worksheet $sheet)
+    public function styles(Worksheet $sheet): ?array
     {
         return [
             1 => [
