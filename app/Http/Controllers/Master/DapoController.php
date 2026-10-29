@@ -12,7 +12,7 @@ class DapoController extends Controller
     public function index(Request $request) {
         $dapo = null;
         if ($request->has('npsn')) {
-            $response = Http::withToken(env('DAPO_TOKEN'))->get(env('DAPO_URL').'/'.$request->npsn);
+            $response = Http::withToken(config('services.dapo.token'))->get(config('services.dapo.url').'/'.$request->npsn);
             $dapo = $response->json();
         }
         return view('admin.master.dapo-lpmaarif', compact('dapo'));
@@ -32,7 +32,7 @@ class DapoController extends Controller
                 'alamat' => 'required',
             ]);
 
-            $response = Http::withToken(env('DAPO_TOKEN'))->asForm()->post(env('DAPO_URL'), [
+            $response = Http::withToken(config('services.dapo.token'))->asForm()->post(config('services.dapo.url'), [
                 'npsn' => $request->npsn,
                 'nama' => $request->nama_sekolah,
                 'nama_yayasan' => $request->nama_yayasan,
@@ -67,7 +67,7 @@ class DapoController extends Controller
 
     public function destroy($npsn) {
         try {
-            $response = Http::withToken(env('DAPO_TOKEN'))->delete(env('DAPO_URL').'/'.$npsn);
+            $response = Http::withToken(config('services.dapo.token'))->delete(config('services.dapo.url').'/'.$npsn);
             $response = $response->json();
             return redirect()->route('dapo.index')->with('success', $response['message']);
 
