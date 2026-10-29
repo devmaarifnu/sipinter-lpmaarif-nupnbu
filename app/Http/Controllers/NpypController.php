@@ -885,7 +885,7 @@ class NpypController extends Controller
                 $this->data = $data;
             }
             
-            public function collection() {
+            public function collection(): \Illuminate\Support\Enumerable {
                 return collect($this->data);
             }
         }, $filename);
