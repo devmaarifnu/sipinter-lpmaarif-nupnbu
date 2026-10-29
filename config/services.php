@@ -36,6 +36,10 @@ return [
         'url' => env('DAPO_URL', 'http://dapo.maarifnu.or.id/api/pusatdata/pendidikan'),
     ],
 
+    'mail_service' => [
+        'uri' => env('MAIL_SERIVICE_URI'),
+    ],
+
     'referensi_kemdikbud' => [
         'url' => env('REFERENSI_KEMDIKBUD_URL', 'https://referensi.data.kemdikbud.go.id/pendidikan/npsn'),
     ],

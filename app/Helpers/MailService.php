@@ -9,7 +9,14 @@ class MailService {
     {
         $client = new Client();
 
-        $response = $client->post(env("MAIL_SERIVICE_URI"), [
+        // Dibaca dari config, bukan env(): setelah `config:cache`, env() di luar
+        // folder config/ selalu mengembalikan null sehingga URI menjadi kosong.
+        $uri = config('services.mail_service.uri');
+        if (blank($uri)) {
+            throw new \RuntimeException('MAIL_SERIVICE_URI belum diset pada konfigurasi.');
+        }
+
+        $response = $client->post($uri, [
             'headers' => [
                 'Content-Type' => 'application/json',
             ],
