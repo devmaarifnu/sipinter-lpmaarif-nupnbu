@@ -118,6 +118,21 @@
                         </tr>
 
                         <tr>
+                            <th width="150">Fitur Layanan OSS</th>
+                            <td width="10">:</td>
+                            <td>
+                                <select name="oss_feature_enabled" class="form-select form-select-sm w-25">
+                                    <option value="1" {{ (string) ($ossFeatureEnabled ? 1 : 0) === '1' ? 'selected' : '' }}>Aktif</option>
+                                    <option value="0" {{ (string) ($ossFeatureEnabled ? 1 : 0) === '0' ? 'selected' : '' }}>Maintenance (Nonaktif)</option>
+                                </select>
+                                <small class="text-muted d-block mt-1">
+                                    Jika dinonaktifkan, menu Layanan OSS di akun Operator tidak bisa digunakan dan menampilkan
+                                    pemberitahuan bahwa layanan dialihkan ke Tim OSS PBNU melalui PCNU masing-masing.
+                                </small>
+                            </td>
+                        </tr>
+
+                        <tr>
                             <td colspan="2"></td>
                             <td>
                                 <button type="submit" class="btn btn-sm btn-primary">

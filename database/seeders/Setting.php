@@ -48,6 +48,11 @@ class Setting extends Seeder
                 "lookup" => 'oss_spreadsheet',
                 "value" => "https://docs.google.com/spreadsheets/d/1WiOIiTCyJ3hOpA7C1g8LxpK9J_wDX78IGeTcM5vtNGE/edit?usp=sharing",
             ],
+            [
+                "describe" => 'FITUR LAYANAN OSS',
+                "lookup" => 'oss_feature_enabled',
+                "value" => "1",
+            ],
 
 
         ];
