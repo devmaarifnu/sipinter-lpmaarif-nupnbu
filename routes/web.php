@@ -129,8 +129,13 @@ Route::middleware('mustlogin')->group(function () {
         /**
          * OSS
          */
-        Route::group(["prefix" => "oss", "middleware" => "verifysatpenactive"], function () {
+        Route::group(["prefix" => "oss", "middleware" => ["verifysatpenactive", "ossfeature"]], function () {
             Route::get('/forbidden', [OSSController::class, 'forbiddenPage'])->name('oss.403')->withoutMiddleware('verifysatpenactive');
+            /**
+             * Halaman maintenance wajib bisa dibuka operator walau saklar fitur
+             * OSS sedang nonaktif, karena middleware ossfeature mengarah ke sini.
+             */
+            Route::get('/maintenance', [OSSController::class, 'maintenancePage'])->name('oss.maintenance')->withoutMiddleware('ossfeature');
             Route::get('/', [OSSController::class, 'landOSSRequest'])->name('oss');
             Route::get('/new', [OSSController::class, 'newOSSRequest'])->name('oss.new');
             Route::get('/detail/{ossId}', [OSSController::class, 'detailOSSQuesioner'])->name('oss.detail');
