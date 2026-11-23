@@ -167,7 +167,8 @@
                                 @php($today = \Carbon\Carbon::now())
                                 @if ($satpenProfile->count() > 0)
                                     @foreach ($satpenProfile as $row)
-                                        @php($diff = $today->diffInMonths(\Carbon\Carbon::parse($row->actived_date)))
+                                        {{-- Carbon 3: diffIn* mengembalikan float bertanda; arahkan dari tanggal aktivasi ke hari ini lalu bulatkan. --}}
+                                        @php($diff = (int) \Carbon\Carbon::parse($row->actived_date)->diffInMonths($today))
                                         <tr>
                                             <td>{{ ++$no }}</td>
                                             <td>{{ $row->kategori?->nm_kategori }}</td>
