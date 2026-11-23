@@ -600,4 +600,8 @@ class OSSController extends Controller
     public function forbiddenPage() {
         return view('oss.forbidden');
     }
+
+    public function maintenancePage() {
+        return view('oss.maintenance');
+    }
 }

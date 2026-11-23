@@ -22,11 +22,26 @@ class Settings extends Controller
         return null;
     }
 
+    /**
+     * Cek saklar fitur pada tabel settings.
+     * Nilai '1'/'true'/'on'/'aktif' dianggap aktif; lookup yang belum ada
+     * mengikuti $default agar fitur lama tetap berjalan.
+     */
+    public static function featureEnabled(string $lookup, bool $default = true)
+    {
+        $value = self::get($lookup);
+        if ($value === null) {
+            return $default;
+        }
+        return in_array(strtolower(trim((string) $value)), ['1', 'true', 'on', 'aktif', 'yes'], true);
+    }
+
     public function pageSetting()
     {
         $settings = Setting::orderBy('id')->get()->toArray();
         $tapel = TahunPelajaran::orderBy('id', 'desc')->get();
-        return view('admin.users.setting', compact('settings', 'tapel'));
+        $ossFeatureEnabled = self::featureEnabled('oss_feature_enabled');
+        return view('admin.users.setting', compact('settings', 'tapel', 'ossFeatureEnabled'));
     }
 
     public function saveSetting(Request $request)
@@ -35,10 +50,26 @@ class Settings extends Controller
         $request->validate([
             'template_piagam' => 'file|mimes:docx|max:2024',
             'template_sk' => 'file|mimes:docx|max:2024',
-            'akta_template' => 'file|mimes:docx,pdf|max:5120'
+            'akta_template' => 'file|mimes:docx,pdf|max:5120',
+            'oss_feature_enabled' => 'nullable|in:0,1',
+        ], [
+            'oss_feature_enabled.in' => 'Status Fitur Layanan OSS tidak valid.',
         ]);
 
         foreach (Setting::pluck('value', 'lookup')->all() as $key => $setting) {
+            /**
+             * Saklar fitur OSS boleh dikirim bernilai "0", sehingga tidak bisa
+             * memakai pengecekan `!= null` seperti setting teks lainnya.
+             */
+            if ($key === 'oss_feature_enabled') {
+                if ($request->has($key)) {
+                    Setting::where('lookup', '=', $key)->update([
+                        'value' => $request->input($key) == '1' ? '1' : '0',
+                    ]);
+                }
+                continue;
+            }
+
             if ($request->hasFile($key)) {
                 $file = $request->file($key);
                 $filename = str_replace("#", "", $file->getClientOriginalName());
