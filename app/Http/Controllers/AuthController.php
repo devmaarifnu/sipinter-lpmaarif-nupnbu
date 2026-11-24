@@ -74,8 +74,12 @@ class AuthController extends Controller
 
             $keyProv = Strings::removeFirstWord($cookieValue->propinsiluar_negeri_ln);
             $selectedProv = Provinsi::where('nm_prov', 'like', $keyProv)->first();
-            $kabupaten = [];
-            $cabang = [];
+            /**
+             * Tetap berupa collection kosong walau provinsi tidak cocok,
+             * karena view memanggil pluck() pada keduanya
+             */
+            $kabupaten = collect();
+            $cabang = collect();
 
             if ($selectedProv) {
                 $kabupaten = Kabupaten::where('id_prov', '=', $selectedProv->id_prov)
