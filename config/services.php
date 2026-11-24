@@ -41,7 +41,7 @@ return [
     ],
 
     'referensi_kemdikbud' => [
-        'url' => env('REFERENSI_KEMDIKBUD_URL', 'https://referensi.data.kemdikbud.go.id/pendidikan/npsn'),
+        'url' => env('REFERENSI_KEMDIKBUD_URL', 'https://referensi.data.kemendikdasmen.go.id/satpen/detail'),
     ],
 
 ];
