@@ -41,7 +41,7 @@ class DapoController extends Controller
                 'kecamatan' => $request->kelurahan,
                 'kabupaten' => '-',
                 'provinsi' => '-',
-                'prov' => 'Prov. '.$request->provinsi,
+                'prov' => 'Prov. '.$request->propinsi,
                 'kab' => 'Kab. '.$request->kabupaten,
                 'kec' => 'Kec. '.$request->kecamatan,
                 'bentuk_pendidikan' => $request->bentuk_pendidikan,
