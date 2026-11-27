@@ -133,7 +133,7 @@ class WhatsAppService
                 ->acceptJson()
                 ->asJson()
                 ->timeout((int) config('whatsapp.timeout', 10))
-                ->post(rtrim($baseUrl, '/').'/send/message', [
+                ->post(rtrim($baseUrl, '/'), [
                     'to' => $number,
                     'message' => $message,
                 ]);
