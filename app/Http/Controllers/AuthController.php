@@ -7,6 +7,7 @@ use App\Helpers\MailService;
 use App\Helpers\ReferensiKemdikbud;
 use App\Helpers\DapoMaarifNU;
 use App\Helpers\Strings;
+use App\Services\WhatsAppNotifier;
 use App\Http\Requests\VirtualNPSNRequest;
 use App\Models\Jenjang;
 use App\Models\Kabupaten;
@@ -37,7 +38,7 @@ class AuthController extends Controller
 
     public function requestVirtualNPSN(VirtualNPSNRequest $request) {
         try {
-            VirtualNPSN::create([
+            $vnpsn = VirtualNPSN::create([
                 'id_jenjang' => $request->jenjang,
                 'id_prov' => $request->provinsi,
                 'id_kab' => $request->kabupaten,
@@ -56,6 +57,8 @@ class AuthController extends Controller
                             <p>Setelah mendapatkan NPSN Virtual, VNSN akan terhapus otomatis setelah 2 minggu jika tidak digunakan</p>
                             <h4>Jika dalam 2 hari kerja belum memperoleh balasan, silahkan kontak Admin.</h4>"
             ]);
+
+            WhatsAppNotifier::vnpsnRequested($vnpsn);
             return redirect()->route('ceknpsn')->with("success", "Permohonan VNPSN berhasil dikirimkan. Tunggu NPSN Virtual dikirimkan oleh admin pada email anda. Jika dalam 2 hari kerja belum memperoleh balasan, silahkan kontak Admin.");
 
         } catch (\Exception $e) {

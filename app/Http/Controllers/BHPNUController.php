@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\BHPNURequest;
+use App\Services\WhatsAppNotifier;
 use App\Models\BHPNU;
 use App\Models\BHPNUStatus;
 use Carbon\Carbon;
@@ -81,6 +82,8 @@ class BHPNUController extends Controller
             'bukti_bayar' => 'required|nullable|file|mimes:pdf,jpg,jpeg,png,svg|max:1024',
         ]);
 
+        $previousStatus = $bhpnu->status;
+
         if ($request->file('bukti_bayar')
             && $request->file('bukti_bayar')->isValid()) {
             $pathBuktiBayar = Storage::disk('bhpnu-doc')->putFile("bukti-bayar", $request->file('bukti_bayar'));
@@ -107,6 +110,11 @@ class BHPNUController extends Controller
             'status' => null,
             'keterangan' => null,
         ]);
+
+        WhatsAppNotifier::bhpnuSubmitted(
+            $bhpnu->fresh('satpen'),
+            $previousStatus === 'perbaikan' ? 'submit perbaikan' : 'pengajuan baru'
+        );
 
         return redirect()->back()->with('success', 'Berhasil melakukan permohonan BHPNU');
     }

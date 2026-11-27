@@ -6,6 +6,7 @@ use App\Exceptions\CatchErrorException;
 use App\Http\Controllers\Controller;
 use App\Models\Coretax;
 use App\Models\CoretaxStatus;
+use App\Services\WhatsAppNotifier;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -227,6 +228,8 @@ class CoretaxAdminController extends Controller
                     'keterangan' => null,
                 ]);
 
+                WhatsAppNotifier::coretaxAccepted($coretax->fresh('satpen'));
+
                 return redirect()->back()->with('success', 'Berhasil mengajukan permohonan Coretax');
             }
             return redirect()->back()->with('error', 'Invalid Coretax Id');
@@ -276,6 +279,8 @@ class CoretaxAdminController extends Controller
                     'keterangan' => null
                 ]);
 
+                WhatsAppNotifier::coretaxRejected($coretax->fresh('satpen'), $request->keterangan);
+
                 return redirect()->back()->with('success', 'Permohonan Coretax ditolak');
             }
             return redirect()->back()->with('error', 'Invalid Coretax Id');
@@ -307,6 +312,8 @@ class CoretaxAdminController extends Controller
                     'status' => 'success',
                     'keterangan' => $request->keterangan,
                 ]);
+
+                WhatsAppNotifier::coretaxApproved($coretax->fresh('satpen'));
 
                 return redirect()->back()->with('success', 'Pengajuan layanan coretax berhasil di approve');
             }

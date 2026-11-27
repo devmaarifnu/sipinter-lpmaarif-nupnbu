@@ -73,6 +73,19 @@ return [
             'replace_placeholders' => true,
         ],
 
+        /**
+         * Log khusus notifikasi WhatsApp. Dipisah dari laravel.log supaya
+         * kegagalan hit ke WhatsApp Gateway mudah dilacak tanpa tenggelam
+         * di log aplikasi lainnya.
+         */
+        'whatsapp' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/whatsapp.log'),
+            'level' => env('WA_LOG_LEVEL', 'info'),
+            'days' => env('WA_LOG_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),

@@ -6,6 +6,7 @@ use App\Exceptions\CatchErrorException;
 use App\Export\ExportDocument;
 use App\Helpers\GenerateQr;
 use App\Helpers\MailService;
+use App\Services\WhatsAppNotifier;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Settings;
 use App\Http\Requests\StatusSatpenRequest;
@@ -208,7 +209,14 @@ class SATPENController extends Controller
         }
     }
 
-    public function updateSatpenStatus(StatusSatpenRequest $request, Satpen $satpen)
+    /**
+     * @param  bool  $notifyOperator  Kirim notifikasi WhatsApp ke operator satpen.
+     *                                Diisi false bila perubahan status dipicu oleh
+     *                                operator sendiri (registrasi/revisi) atau oleh
+     *                                proses sistem, karena notifikasi admin untuk
+     *                                kasus tersebut dikirim terpisah.
+     */
+    public function updateSatpenStatus(StatusSatpenRequest $request, Satpen $satpen, bool $notifyOperator = true)
     {
         try {
             if ($satpen->status == $request->status_verifikasi) return redirect()->back()->with('error', 'status satpen sudah sudah sesuai');
@@ -223,6 +231,10 @@ class SATPENController extends Controller
                 'tgl_status' => Date::now(),
                 'keterangan' => $request->keterangan,
             ]);
+
+            if ($notifyOperator) {
+                WhatsAppNotifier::satpenStatusChanged($satpen, $request->status_verifikasi, $request->keterangan);
+            }
 
             $status_verifikasi = strtoupper($request->status_verifikasi);
             MailService::send([
@@ -409,6 +421,13 @@ class SATPENController extends Controller
                 "content" => "<p>Kami mengingatkan kembali bahwa status permohonan satuan pendidikan anda dalam revisi.
                                     Sehingga perlu perbaikan data sesuai dengan arahan verifikator.</p>"
             ]);
+
+            WhatsAppNotifier::satpenAdminNotice(
+                $satpen,
+                'PENGINGAT PERBAIKAN DATA SATPEN',
+                'Status permohonan satuan pendidikan Anda masih dalam revisi. Mohon segera melakukan perbaikan data sesuai arahan verifikator.'
+            );
+
             return redirect()->back()->with('success', 'Email berhasil dikirimkan');
         }
         return redirect()->back()->with('error', 'Satpen tidak ditemukan');

@@ -113,7 +113,8 @@ class SyncController extends Controller
                                 "status_verifikasi" => "expired",
                                 "keterangan" => "import by system",
                             ]),
-                            $satpen);
+                            $satpen,
+                            false);
                     }
                     return response()->json($satpen, HttpResponse::HTTP_OK);
 

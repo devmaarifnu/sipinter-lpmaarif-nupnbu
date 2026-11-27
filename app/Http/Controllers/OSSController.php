@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\OSSRequest;
+use App\Services\WhatsAppNotifier;
 use App\Models\OSS;
 use App\Models\OSSStatus;
 use App\Models\OSSTimeline;
@@ -202,6 +203,7 @@ class OSSController extends Controller
         $filename_file_izin_lama = $oss->file_izin_lama;
         $filename_file_peta_polygon = $oss->file_peta_polygon;
         $filename_rencana_teknis_bangunan = $oss->rencana_teknis_bangunan;
+        $previousStatus = $oss->status;
         try {
             if ($request->file('bukti_bayar') && $request->file('bukti_bayar')->isValid()) {
                 $originalName = $no_registrasi.'~'.$request->file('bukti_bayar')->getClientOriginalName();
@@ -571,6 +573,15 @@ class OSSController extends Controller
                 ]);
 
             });
+
+            /**
+             * Operator submit ulang setelah ditolak (status awal "perbaikan")
+             * maupun pengajuan pertama — keduanya sama-sama perlu dilihat admin.
+             */
+            WhatsAppNotifier::ossSubmitted(
+                $oss->fresh(),
+                $previousStatus === 'perbaikan' ? 'submit perbaikan' : 'pengajuan baru'
+            );
 
             return redirect()->back()->with('success', 'Berhasil melakukan permohonan OSS');
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CoretaxRequest;
+use App\Services\WhatsAppNotifier;
 use App\Models\Coretax;
 use App\Models\CoretaxStatus;
 use Carbon\Carbon;
@@ -121,11 +122,19 @@ class CoretaxController extends Controller
             $coretax->new_request = 1;
             $coretax->save();
         }
+        if ($coretax) {
+            WhatsAppNotifier::coretaxRequestAction(
+                $coretax->fresh('satpen'),
+                'operator mengajukan permohonan buka expiry'
+            );
+        }
+
         return redirect()->back()->with('success', 'Permohonan hapus expiry berhasil dilakukan. Silahkan menunggu verifikasi Admin.');
     }
 
     public function stored(CoretaxRequest $request, Coretax $coretax)
     {
+        $previousStatus = $coretax->status;
         $pathNpwpLama = $coretax->npwp_lama;
         if ($request->file('npwp_lama')
             && $request->file('npwp_lama')->isValid()) {
@@ -157,6 +166,11 @@ class CoretaxController extends Controller
             'status' => null,
             'keterangan' => null,
         ]);
+
+        WhatsAppNotifier::coretaxSubmitted(
+            $coretax->fresh('satpen'),
+            $previousStatus === 'perbaikan' ? 'submit perbaikan' : 'pengajuan baru'
+        );
 
         return redirect()->back()->with('success', 'Berhasil mengajukan permohonan layanan Coretax');
     }

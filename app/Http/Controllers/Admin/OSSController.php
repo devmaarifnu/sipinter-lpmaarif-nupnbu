@@ -6,6 +6,7 @@ use App\Exceptions\CatchErrorException;
 use App\Http\Controllers\Controller;
 use App\Models\OSS;
 use App\Models\OSSStatus;
+use App\Services\WhatsAppNotifier;
 use App\Models\OSSTimeline;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -101,6 +102,8 @@ class OSSController extends Controller
                     'nomor_ku' => $request->nomor_ku,
                 ]);
 
+                WhatsAppNotifier::ossAccepted($oss->fresh('satpen'));
+
                 return redirect()->back()->with('success', 'Berhasil menerima permohonan');
             }
             return redirect()->back()->with('error', 'Invalid OSS Id');
@@ -145,6 +148,8 @@ class OSSController extends Controller
                     'nomor_ku' => $request->nomor_ku,
                 ]);
 
+                WhatsAppNotifier::ossRejected($oss->fresh('satpen'), $request->keterangan);
+
                 return redirect()->back()->with('success', 'Permohonan oss ditolak');
             }
             return redirect()->back()->with('error', 'Invalid OSS Id');
@@ -186,6 +191,8 @@ class OSSController extends Controller
                     'link_izin_terbit' => $request->link_izin_terbit,
                     'nomor_ku' => $request->nomor_ku,
                 ]);
+
+                WhatsAppNotifier::ossIssued($oss->fresh('satpen'));
 
                 return redirect()->back()->with('success', 'Berhasil menerbitkan izin oss');
             }
