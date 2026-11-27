@@ -38,6 +38,8 @@ return [
 
     'mail_service' => [
         'uri' => env('MAIL_SERIVICE_URI'),
+        // Channel log kegagalan pengiriman email (lihat config/logging.php).
+        'log_channel' => env('MAIL_LOG_CHANNEL', 'mail'),
     ],
 
     'referensi_kemdikbud' => [

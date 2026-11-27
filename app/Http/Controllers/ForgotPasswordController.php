@@ -42,13 +42,25 @@ class ForgotPasswordController extends Controller
         ]);
 
         $link_reset = url('auth/reset', $token);
-        MailService::send([
+        /**
+         * Reset password tidak bisa fire-and-forget: pengguna harus tahu bila
+         * email gagal dikirim, jadi pengiriman dilakukan langsung ($defer =
+         * false). Tetap tidak melempar exception — hanya mengembalikan status.
+         */
+        $sent = MailService::send([
             "to" => $satpen->email,
             "subject" => "Reset Password",
             "recipient" => "Operator Sekolah",
             "content" => "<p>Anda dapat mengatur ulang kata sandi dari tautan di bawah ini:</p>
                             <a href='$link_reset' class='cta-button'>Reset Password</a>"
-        ]);
+        ], false);
+
+        if (!$sent) {
+            return back()->with('error', sprintf(
+                "Link reset password gagal dikirim ke email %s. Silakan coba beberapa saat lagi atau hubungi admin.",
+                $satpen->email
+            ));
+        }
 
         return back()->with('success', sprintf("Link reset password telah dikirimkan pada email %s !", $satpen->email));
     }
