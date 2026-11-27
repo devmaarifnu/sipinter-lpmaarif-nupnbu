@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PTK;
+use App\Services\WhatsAppNotifier;
 use App\Models\PTKStatusHistory;
 use App\Models\NPYPSatpen;
 use App\Models\Satpen;
@@ -249,6 +250,8 @@ class PTKController extends Controller
 
             DB::commit();
 
+            WhatsAppNotifier::ptkSubmitted($ptk->fresh('satpen'));
+
             return response()->json([
                 'success' => true,
                 'message' => 'Data PTK berhasil disimpan dan menunggu verifikasi'
@@ -411,6 +414,8 @@ class PTKController extends Controller
 
             DB::commit();
 
+            WhatsAppNotifier::ptkSubmitted($ptk->fresh('satpen'), 'submit perbaikan');
+
             return response()->json([
                 'success' => true,
                 'message' => 'Data PTK berhasil diperbarui'
@@ -524,6 +529,8 @@ class PTKController extends Controller
             );
 
             DB::commit();
+
+            WhatsAppNotifier::ptkSubmitted($ptk->fresh('satpen'), 'submit perbaikan (ajukan ulang)');
 
             return response()->json([
                 'success' => true,

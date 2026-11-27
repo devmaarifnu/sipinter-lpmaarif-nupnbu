@@ -76,7 +76,8 @@ Five roles enforced via dedicated middleware in `app/Http/Middleware/`:
 - `app/Http/Controllers/Api/` — API endpoints (minimal, mostly for mobile)
 - `app/Models/` — 34+ Eloquent models; primary keys are named `id_*` (e.g., `id_satpen`, `id_user`)
 - `app/Exports/` — Excel export classes using `maatwebsite/excel`
-- `app/Helpers/` — Service helpers: `DapoMaarifNU`, `DapoKemdikbud` (external data sync), `Gdrive`, `GenerateQr`, `MailService`, `ReferensiKemdikbud`
+- `app/Helpers/` — Service helpers: `DapoMaarifNU`, `DapoKemdikbud` (external data sync), `Gdrive`, `GenerateQr`, `MailService`, `ReferensiKemdikbud`, `DeferredTask` (jalankan email/notifikasi setelah response tanpa mengganggu proses utama)
+- `app/Services/` — `WhatsAppService` (klien WhatsApp Gateway) dan `WhatsAppNotifier` (pesan + routing admin/operator); lihat `docs/WHATSAPP-NOTIFICATION.md`
 - `app/Observers/GlobalModelObserver` — Single observer wired to all models for audit logging
 - `resources/views/` — Blade views organized by module (admin/, satpen/, ptk/, bhpnu/, oss/, coretax/, etc.)
 - `routes/web.php` — Primary route file (372 lines); `routes/api.php` is minimal

@@ -7,6 +7,7 @@ use App\Helpers\WatermarkService;
 use App\Http\Controllers\Controller;
 use App\Models\BHPNU;
 use App\Models\BHPNUStatus;
+use App\Services\WhatsAppNotifier;
 use Illuminate\Http\Request;
 
 class BHPNUController extends Controller
@@ -80,6 +81,8 @@ class BHPNUController extends Controller
                     'status' => 'success',
                 ]);
 
+                WhatsAppNotifier::bhpnuAccepted($bhpnu->fresh('satpen'));
+
                 return redirect()->back()->with('success', 'Berhasil menerima permohonan');
             }
             return redirect()->back()->with('error', 'Invalid BHPNU Id');
@@ -104,6 +107,8 @@ class BHPNUController extends Controller
                     'status' => 'failed',
                     'keterangan' => $request->keterangan,
                 ]);
+
+                WhatsAppNotifier::bhpnuRejected($bhpnu->fresh('satpen'), $request->keterangan);
 
                 return redirect()->back()->with('success', 'Permohonan bhpnu ditolak');
             }
@@ -131,6 +136,8 @@ class BHPNUController extends Controller
                     'status' => 'success',
                     'keterangan' => $request->keterangan ?? 'Dokumen telah dikirimkan ke alamat anda',
                 ]);
+
+                WhatsAppNotifier::bhpnuDocumentSent($bhpnu->fresh('satpen'));
 
                 /**
                  * Approve permohonan sekaligus meminta WM Service membubuhkan

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PTK;
 use App\Models\PTKStatusHistory;
+use App\Services\WhatsAppNotifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -379,6 +380,8 @@ class AdminPTKController extends Controller
             );
 
             DB::commit();
+
+            WhatsAppNotifier::ptkAction($ptk->fresh('satpen'), $action, $notes);
 
             return response()->json([
                 'success' => true,

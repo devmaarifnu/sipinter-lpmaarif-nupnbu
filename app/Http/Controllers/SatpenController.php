@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\CatchErrorException;
 use App\Helpers\MailService;
 use App\Helpers\ReferensiKemdikbud;
+use App\Services\WhatsAppNotifier;
 use App\Http\Controllers\Admin\SATPENController as SatpenControllerAdmin;
 use App\Http\Requests\CekNpsnRequest;
 use App\Http\Requests\OtherRequest;
@@ -161,8 +162,11 @@ class SatpenController extends Controller
                                         "status_verifikasi" => "permohonan",
                                         "keterangan" => "",
                                     ]),
-                                $satpen
+                                $satpen,
+                                false
                             );
+
+                            WhatsAppNotifier::satpenRegistered($satpen);
                         } catch (\Exception $e) {
                             throw new CatchErrorException("[REGISTER PROCESS INSERT] has error " . $e);
                         }
@@ -380,16 +384,22 @@ class SatpenController extends Controller
                                 "status_verifikasi" => "permohonan",
                                 "keterangan" => "permohonan setelah revisi",
                             ]),
-                        $satpen
+                        $satpen,
+                        false
                     );
+
+                    WhatsAppNotifier::satpenResubmitted($satpen, 'Perbaikan data satpen setelah revisi');
                 } elseif ($satpen->status == "expired") {
                     (new SatpenControllerAdmin())->updateSatpenStatus((new StatusSatpenRequest())
                             ->merge([
                                 "status_verifikasi" => "perpanjangan",
                                 "keterangan" => "permohonan perpanjangan dokumen",
                             ]),
-                        $satpen
+                        $satpen,
+                        false
                     );
+
+                    WhatsAppNotifier::satpenResubmitted($satpen, 'Permohonan perpanjangan dokumen');
                 }
 
                 return redirect()->route('mysatpen')->with('success', 'satpen berhasil di update');
@@ -518,16 +528,22 @@ class SatpenController extends Controller
                                 "status_verifikasi" => "perpanjangan",
                                 "keterangan" => "memperbaharui npsn",
                             ]),
-                        $satpen
+                        $satpen,
+                        false
                     );
+
+                    WhatsAppNotifier::satpenResubmitted($satpen, 'Permohonan perpanjangan (perubahan NPSN)');
                 } elseif ($satpen->status == "revisi") {
                     (new SatpenControllerAdmin())->updateSatpenStatus((new StatusSatpenRequest())
                             ->merge([
                                 "status_verifikasi" => "permohonan",
                                 "keterangan" => "memperbaharui npsn",
                             ]),
-                        $satpen
+                        $satpen,
+                        false
                     );
+
+                    WhatsAppNotifier::satpenResubmitted($satpen, 'Perbaikan NPSN setelah revisi');
                 }
                 return redirect()->back()->with('success', 'Berhasil memperbaharui npsn satuan pendidikan. Data sedang ditinjau oleh Admin');
             }
